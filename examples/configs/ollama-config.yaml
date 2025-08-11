@@ -1,0 +1,65 @@
+# Ollama 本地部署配置示例
+# 适用于本地部署开源模型的场景，数据隐私性高
+
+llm:
+  provider: "ollama"
+  model: "llama3"  # 或 qwen, mistral, codellama 等
+  base_url: "http://localhost:11434"  # Ollama 服务地址
+  temperature: 0.7  # 控制输出的随机性
+  max_tokens: 2000  # 最大生成令牌数
+  timeout: 120  # 本地模型可能需要更长时间
+  retry_attempts: 3  # 失败重试次数
+  # 注意：Ollama 不需要 api_key
+  
+  # Ollama 特有参数
+  num_predict: 2000  # 预测的令牌数
+  num_ctx: 4096  # 上下文窗口大小
+  repeat_penalty: 1.1  # 重复惩罚
+  top_k: 40  # top-k 采样
+  top_p: 0.9  # 核采样
+
+embeddings:
+  provider: "ollama"
+  model: "nomic-embed-text"  # 或 all-minilm
+  base_url: "http://localhost:11434"
+  dimensions: 768  # nomic-embed-text 的维度
+  batch_size: 50  # 本地模型建议较小批次
+  timeout: 120  # 本地嵌入可能需要更长时间
+  max_concurrent_requests: 2  # 本地资源有限，减少并发
+
+# 支持的模型示例：
+# LLM 模型：
+# - llama3: Meta 的 Llama 3 模型
+# - qwen: 阿里的通义千问模型
+# - mistral: Mistral AI 的模型
+# - codellama: 专门用于代码的 Llama 模型
+# - gemma: Google 的 Gemma 模型
+
+# 嵌入模型：
+# - nomic-embed-text: 高质量文本嵌入
+# - all-minilm: 轻量级多语言嵌入
+
+# 安装和使用说明：
+# 1. 安装 Ollama：curl -fsSL https://ollama.ai/install.sh | sh
+# 2. 启动 Ollama 服务：ollama serve
+# 3. 下载模型：ollama pull llama3
+# 4. 下载嵌入模型：ollama pull nomic-embed-text
+# 5. 确保 Ollama 服务在 localhost:11434 运行
+
+# 优势：
+# - 完全本地部署，数据不出本地
+# - 无需 API 费用
+# - 可以离线使用
+# - 支持多种开源模型
+
+# 注意事项：
+# - 需要足够的本地计算资源（GPU 推荐）
+# - 首次运行需要下载模型文件（较大）
+# - 响应速度取决于本地硬件性能
+# - 建议使用 GPU 加速以获得更好性能
+
+# 硬件要求建议：
+# - 内存：至少 8GB，推荐 16GB+
+# - 存储：每个模型需要 4-40GB 空间
+# - GPU：推荐 NVIDIA GPU 用于加速
+# - CPU：多核处理器，推荐 8 核+

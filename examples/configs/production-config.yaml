@@ -1,0 +1,130 @@
+# 生产环境配置示例
+# 针对生产环境优化的配置，注重稳定性、性能和成本控制
+
+llm:
+  provider: "siliconflow"
+  model: "Qwen/Qwen2-72B-Instruct"  # 使用高质量模型
+  api_key: "${SILICONFLOW_API_KEY}"
+  base_url: "https://api.siliconflow.cn/v1"
+  temperature: 0.3  # 生产环境使用较低温度，确保输出稳定
+  max_tokens: 2000
+  timeout: 30  # 较短的超时时间
+  retry_attempts: 3
+  request_timeout: 25  # 请求级别超时
+  connect_timeout: 5   # 连接超时
+  
+  # 生产环境特有配置
+  top_p: 0.85  # 稍微保守的采样
+  repetition_penalty: 1.05  # 轻微的重复惩罚
+  
+  # 性能优化
+  stream: false  # 生产环境可能不需要流式输出
+  
+  # 监控和日志
+  enable_logging: true
+  log_requests: false  # 生产环境不记录详细请求以保护隐私
+  log_responses: false
+  log_errors: true  # 只记录错误
+
+embeddings:
+  provider: "siliconflow"
+  model: "BAAI/bge-large-zh-v1.5"
+  api_key: "${SILICONFLOW_API_KEY}"
+  base_url: "https://api.siliconflow.cn/v1"
+  dimensions: 1024
+  batch_size: 150  # 较大的批处理大小提高效率
+  timeout: 30
+  max_concurrent_requests: 3  # 控制并发以避免过载
+  
+  # 性能优化
+  connection_pool_size: 10  # 连接池大小
+  max_retries_per_request: 2  # 每个请求的最大重试次数
+  
+  # 监控配置
+  enable_metrics: true  # 启用性能指标收集
+  metrics_interval: 60  # 指标收集间隔（秒）
+
+# 生产环境全局配置
+global:
+  # 错误处理
+  enable_fallback: true  # 启用降级机制
+  fallback_provider: "openai"  # 备用提供商
+  fallback_model: "gpt-3.5-turbo"  # 备用模型
+  
+  # 缓存配置
+  enable_cache: true  # 启用响应缓存
+  cache_ttl: 3600  # 缓存过期时间（秒）
+  cache_max_size: 1000  # 最大缓存条目数
+  
+  # 限流配置
+  rate_limit_enabled: true
+  requests_per_minute: 100  # 每分钟最大请求数
+  requests_per_hour: 5000   # 每小时最大请求数
+  
+  # 健康检查
+  health_check_enabled: true
+  health_check_interval: 300  # 健康检查间隔（秒）
+  health_check_timeout: 10    # 健康检查超时
+  
+  # 监控和告警
+  monitoring_enabled: true
+  alert_on_failure_rate: 0.1  # 失败率超过10%时告警
+  alert_on_latency: 5000      # 延迟超过5秒时告警
+  
+  # 安全配置
+  api_key_rotation_enabled: true  # 启用API密钥轮换
+  request_signing_enabled: false  # 请求签名（如果支持）
+  
+  # 数据保护
+  data_encryption_enabled: true   # 启用数据加密
+  pii_detection_enabled: true     # 启用PII检测
+  content_filtering_enabled: true # 启用内容过滤
+
+# 备用配置（降级时使用）
+fallback:
+  llm:
+    provider: "openai"
+    model: "gpt-3.5-turbo"  # 使用更便宜的模型作为备用
+    api_key: "${OPENAI_API_KEY}"
+    temperature: 0.5
+    max_tokens: 1500  # 较小的token限制以控制成本
+    timeout: 20
+    retry_attempts: 2
+  
+  embeddings:
+    provider: "openai"
+    model: "text-embedding-ada-002"
+    api_key: "${OPENAI_API_KEY}"
+    dimensions: 1536
+    batch_size: 100
+    timeout: 20
+
+# 环境变量要求：
+# export SILICONFLOW_API_KEY="your-primary-api-key"
+# export OPENAI_API_KEY="your-fallback-api-key"
+
+# 生产环境部署检查清单：
+# □ 所有API密钥已正确设置
+# □ 网络连接和防火墙配置正确
+# □ 监控和日志系统已配置
+# □ 备用提供商配置已测试
+# □ 性能基准测试已完成
+# □ 错误处理和降级机制已验证
+# □ 安全扫描已通过
+# □ 负载测试已完成
+# □ 文档和运维手册已更新
+# □ 告警和通知系统已配置
+
+# 性能调优建议：
+# 1. 根据实际负载调整 batch_size 和 max_concurrent_requests
+# 2. 监控 API 响应时间，适当调整 timeout 设置
+# 3. 使用缓存减少重复请求
+# 4. 定期检查和优化模型选择
+# 5. 实施请求去重和合并策略
+
+# 成本控制策略：
+# 1. 使用较低的 temperature 减少不必要的创造性输出
+# 2. 设置合理的 max_tokens 限制
+# 3. 实施智能缓存策略
+# 4. 监控 API 使用量和成本
+# 5. 在非关键场景使用更便宜的模型

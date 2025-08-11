@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端集成测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 前端集成测试</h1>
+    <p>测试修复后的前端JavaScript功能是否正常工作</p>
+
+    <div class="test-section">
+        <h2>1. 测试前端JavaScript加载</h2>
+        <button class="test-button" onclick="testJSLoading()">测试JS加载</button>
+        <div id="js-loading-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. 测试API客户端</h2>
+        <button class="test-button" onclick="testAPIClient()">测试API客户端</button>
+        <div id="api-client-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. 测试QA管理器</h2>
+        <button class="test-button" onclick="testQAManager()">测试QA管理器</button>
+        <div id="qa-manager-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. 测试历史记录管理器</h2>
+        <button class="test-button" onclick="testHistoryManager()">测试历史记录管理器</button>
+        <div id="history-manager-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. 测试实际历史记录功能</h2>
+        <button class="test-button" onclick="testActualHistory()">测试实际历史记录</button>
+        <div id="actual-history-result"></div>
+    </div>
+
+    <!-- 引入前端JavaScript文件 -->
+    <script src="/frontend/js/utils.js"></script>
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/notifications.js"></script>
+    <script src="/frontend/js/qa.js"></script>
+    <script src="/frontend/js/history.js"></script>
+
+    <script>
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        function showData(elementId, data, title = '数据') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `
+                <div class="result info">
+                    <strong>${title}:</strong>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+        }
+
+        function testJSLoading() {
+            showResult('js-loading-result', '正在测试JavaScript加载...', 'info');
+            
+            const tests = [
+                { name: 'apiClient', obj: window.apiClient },
+                { name: 'QAManager', obj: window.QAManager },
+                { name: 'HistoryManager', obj: window.HistoryManager },
+                { name: 'formatTime', obj: window.formatTime },
+                { name: 'formatDate', obj: window.formatDate }
+            ];
+
+            let results = [];
+            for (const test of tests) {
+                if (test.obj) {
+                    results.push(`✅ ${test.name}: 已加载`);
+                } else {
+                    results.push(`❌ ${test.name}: 未加载`);
+                }
+            }
+
+            showResult('js-loading-result', results.join('<br>'), 'success');
+        }
+
+        function testAPIClient() {
+            showResult('api-client-result', '正在测试API客户端...', 'info');
+            
+            if (!window.apiClient) {
+                showResult('api-client-result', '❌ API客户端未加载', 'error');
+                return;
+            }
+
+            // 测试API客户端方法
+            const methods = [
+                'askQuestion',
+                'getSessionHistory', 
+                'getSessions',
+                'getSessionStats'
+            ];
+
+            let results = [];
+            for (const method of methods) {
+                if (typeof apiClient[method] === 'function') {
+                    results.push(`✅ ${method}: 方法存在`);
+                } else {
+                    results.push(`❌ ${method}: 方法不存在`);
+                }
+            }
+
+            showResult('api-client-result', results.join('<br>'), 'success');
+        }
+
+        function testQAManager() {
+            showResult('qa-manager-result', '正在测试QA管理器...', 'info');
+            
+            if (!window.QAManager) {
+                showResult('qa-manager-result', '❌ QAManager类未加载', 'error');
+                return;
+            }
+
+            try {
+                // 创建QA管理器实例（不初始化DOM相关功能）
+                const qaManager = {
+                    displaySessionHistory: QAManager.prototype.displaySessionHistory
+                };
+
+                // 测试displaySessionHistory方法
+                if (typeof qaManager.displaySessionHistory === 'function') {
+                    showResult('qa-manager-result', '✅ QAManager类和displaySessionHistory方法都存在', 'success');
+                } else {
+                    showResult('qa-manager-result', '❌ displaySessionHistory方法不存在', 'error');
+                }
+            } catch (error) {
+                showResult('qa-manager-result', `❌ QAManager测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function testHistoryManager() {
+            showResult('history-manager-result', '正在测试历史记录管理器...', 'info');
+            
+            if (!window.HistoryManager) {
+                showResult('history-manager-result', '❌ HistoryManager类未加载', 'error');
+                return;
+            }
+
+            try {
+                // 测试关键方法
+                const methods = ['renderSessionDetails', 'exportSession'];
+                let results = [];
+                
+                for (const method of methods) {
+                    if (typeof HistoryManager.prototype[method] === 'function') {
+                        results.push(`✅ ${method}: 方法存在`);
+                    } else {
+                        results.push(`❌ ${method}: 方法不存在`);
+                    }
+                }
+
+                showResult('history-manager-result', results.join('<br>'), 'success');
+            } catch (error) {
+                showResult('history-manager-result', `❌ HistoryManager测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testActualHistory() {
+            showResult('actual-history-result', '正在测试实际历史记录功能...', 'info');
+            
+            try {
+                // 1. 创建测试会话
+                const qaResponse = await apiClient.askQuestion('集成测试问题：什么是深度学习？');
+                const sessionId = qaResponse.session_id;
+                
+                showResult('actual-history-result', `✅ 测试会话创建成功: ${sessionId}`, 'success');
+                
+                // 2. 获取会话历史
+                const historyData = await apiClient.getSessionHistory(sessionId);
+                
+                // 3. 测试数据格式处理
+                let history = [];
+                if (Array.isArray(historyData)) {
+                    history = historyData;
+                } else if (historyData && historyData.history) {
+                    history = historyData.history;
+                } else {
+                    throw new Error('无效的历史数据格式');
+                }
+
+                if (history.length > 0) {
+                    const result = `
+                        ✅ 历史记录功能测试成功<br>
+                        📊 会话ID: ${sessionId}<br>
+                        📊 历史记录数量: ${history.length}<br>
+                        📊 数据格式: 正确<br>
+                        📊 第一条记录: ${history[0].question.substring(0, 50)}...
+                    `;
+                    showResult('actual-history-result', result, 'success');
+                } else {
+                    showResult('actual-history-result', '⚠️ 历史记录为空', 'error');
+                }
+                
+            } catch (error) {
+                showResult('actual-history-result', `❌ 实际历史记录测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后的提示
+        window.addEventListener('load', () => {
+            console.log('🔍 前端集成测试页面已加载');
+            console.log('📝 请按顺序点击测试按钮');
+        });
+    </script>
+</body>
+</html>

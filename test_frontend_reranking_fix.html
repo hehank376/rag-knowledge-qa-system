@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重排序模型配置修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success {
+            color: #28a745;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .config-display {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .test-results {
+            margin-top: 20px;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+        }
+        .test-pass {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+        .test-fail {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="section-title">🎯 重排序模型配置修复测试</h1>
+        <p>测试重排序模型配置的获取、修改和保存功能</p>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">📋 当前重排序配置</h2>
+        <button onclick="loadCurrentConfig()">🔄 加载当前配置</button>
+        <div id="currentConfig" class="config-display">点击"加载当前配置"按钮查看...</div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">➕ 添加重排序模型</h2>
+        <form id="rerankingForm">
+            <div class="form-group">
+                <label for="modelName">模型名称:</label>
+                <input type="text" id="modelName" value="test-reranking-frontend" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="provider">提供商:</label>
+                <select id="provider" required>
+                    <option value="siliconflow">SiliconFlow</option>
+                    <option value="openai">OpenAI</option>
+                    <option value="sentence_transformers">Sentence Transformers</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="modelNameField">具体模型名称:</label>
+                <input type="text" id="modelNameField" value="BAAI/bge-reranker-v2-m3" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="batchSize">批处理大小:</label>
+                <input type="number" id="batchSize" value="64" min="1" max="1000" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="maxLength">最大文本长度:</label>
+                <input type="number" id="maxLength" value="1024" min="1" max="10000" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="timeout">超时时间 (秒):</label>
+                <input type="number" id="timeout" value="90" min="1" max="600" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="apiKey">API密钥:</label>
+                <input type="text" id="apiKey" value="sk-test-frontend-key" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="baseUrl">基础URL:</label>
+                <input type="text" id="baseUrl" value="https://api.siliconflow.cn/v1" required>
+            </div>
+            
+            <button type="submit">💾 添加重排序模型</button>
+            <button type="button" onclick="resetForm()">🔄 重置表单</button>
+        </form>
+        
+        <div id="addResult"></div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">🧪 完整测试流程</h2>
+        <button onclick="runCompleteTest()">🚀 运行完整测试</button>
+        <div id="testResults" class="test-results"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+
+        // API客户端
+        class APIClient {
+            async request(method, url, data = null) {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                };
+
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+
+                try {
+                    const response = await fetch(url, options);
+                    const result = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(result.detail || result.message || `HTTP ${response.status}`);
+                    }
+                    
+                    return result;
+                } catch (error) {
+                    console.error('API请求失败:', error);
+                    throw error;
+                }
+            }
+
+            async get(url) {
+                return this.request('GET', url);
+            }
+
+            async post(url, data) {
+                return this.request('POST', url, data);
+            }
+        }
+
+        const apiClient = new APIClient();
+
+        // 加载当前配置
+        async function loadCurrentConfig() {
+            try {
+                showMessage('正在加载配置...', 'info', 'currentConfig');
+                
+                const config = await apiClient.get(`${API_BASE_URL}/config/`);
+                const rerankingConfig = config.config.reranking;
+                
+                if (rerankingConfig) {
+                    const configText = `重排序模型配置:
+提供商: ${rerankingConfig.provider}
+模型: ${rerankingConfig.model}
+模型名称: ${rerankingConfig.model_name || rerankingConfig.model}
+批处理大小: ${rerankingConfig.batch_size}
+最大文本长度: ${rerankingConfig.max_length}
+超时时间: ${rerankingConfig.timeout}秒
+API密钥: ${rerankingConfig.api_key ? rerankingConfig.api_key.substring(0, 15) + '...' : '(未设置)'}
+基础URL: ${rerankingConfig.base_url}`;
+                    
+                    document.getElementById('currentConfig').textContent = configText;
+                    showMessage('✅ 配置加载成功', 'success');
+                } else {
+                    document.getElementById('currentConfig').textContent = '❌ 未找到重排序配置';
+                    showMessage('❌ 未找到重排序配置', 'error');
+                }
+            } catch (error) {
+                document.getElementById('currentConfig').textContent = `❌ 加载失败: ${error.message}`;
+                showMessage(`❌ 加载配置失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 添加重排序模型
+        document.getElementById('rerankingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                model_type: 'reranking',
+                name: document.getElementById('modelName').value,
+                provider: document.getElementById('provider').value,
+                model_name: document.getElementById('modelNameField').value,
+                config: {
+                    provider: document.getElementById('provider').value,
+                    batch_size: parseInt(document.getElementById('batchSize').value),
+                    max_length: parseInt(document.getElementById('maxLength').value),
+                    timeout: parseInt(document.getElementById('timeout').value),
+                    api_key: document.getElementById('apiKey').value,
+                    base_url: document.getElementById('baseUrl').value
+                }
+            };
+            
+            try {
+                showMessage('正在添加重排序模型...', 'info', 'addResult');
+                
+                const result = await apiClient.post(`${API_BASE_URL}/models/add`, formData);
+                
+                showMessage(`✅ ${result.message}`, 'success', 'addResult');
+                
+                // 自动重新加载配置
+                setTimeout(() => {
+                    loadCurrentConfig();
+                }, 1000);
+                
+            } catch (error) {
+                showMessage(`❌ 添加模型失败: ${error.message}`, 'error', 'addResult');
+            }
+        });
+
+        // 重置表单
+        function resetForm() {
+            document.getElementById('rerankingForm').reset();
+            document.getElementById('modelName').value = 'test-reranking-frontend';
+            document.getElementById('provider').value = 'siliconflow';
+            document.getElementById('modelNameField').value = 'BAAI/bge-reranker-v2-m3';
+            document.getElementById('batchSize').value = '64';
+            document.getElementById('maxLength').value = '1024';
+            document.getElementById('timeout').value = '90';
+            document.getElementById('apiKey').value = 'sk-test-frontend-key';
+            document.getElementById('baseUrl').value = 'https://api.siliconflow.cn/v1';
+        }
+
+        // 运行完整测试
+        async function runCompleteTest() {
+            const testResults = document.getElementById('testResults');
+            testResults.innerHTML = '<p>🚀 开始运行完整测试...</p>';
+            
+            const tests = [
+                { name: '加载当前配置', func: testLoadConfig },
+                { name: '添加重排序模型', func: testAddModel },
+                { name: '验证配置更新', func: testConfigUpdate },
+                { name: '验证参数持久化', func: testParameterPersistence }
+            ];
+            
+            let passedTests = 0;
+            
+            for (const test of tests) {
+                try {
+                    const result = await test.func();
+                    if (result.success) {
+                        addTestResult(test.name, '✅ 通过', result.message, 'test-pass');
+                        passedTests++;
+                    } else {
+                        addTestResult(test.name, '❌ 失败', result.message, 'test-fail');
+                    }
+                } catch (error) {
+                    addTestResult(test.name, '❌ 错误', error.message, 'test-fail');
+                }
+                
+                // 测试间隔
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            // 显示总结
+            const summary = document.createElement('div');
+            summary.className = passedTests === tests.length ? 'success' : 'error';
+            summary.innerHTML = `<h3>测试总结</h3><p>通过: ${passedTests}/${tests.length}</p>`;
+            testResults.appendChild(summary);
+        }
+
+        // 测试函数
+        async function testLoadConfig() {
+            const config = await apiClient.get(`${API_BASE_URL}/config/`);
+            if (config.config.reranking) {
+                return { success: true, message: '成功加载重排序配置' };
+            } else {
+                return { success: false, message: '未找到重排序配置' };
+            }
+        }
+
+        async function testAddModel() {
+            const testData = {
+                model_type: 'reranking',
+                name: 'test-complete-flow',
+                provider: 'siliconflow',
+                model_name: 'BAAI/bge-reranker-v2-m3',
+                config: {
+                    provider: 'siliconflow',
+                    batch_size: 128,
+                    max_length: 2048,
+                    timeout: 120,
+                    api_key: 'sk-test-complete-flow',
+                    base_url: 'https://api.siliconflow.cn/v1'
+                }
+            };
+            
+            const result = await apiClient.post(`${API_BASE_URL}/models/add`, testData);
+            return { success: true, message: result.message };
+        }
+
+        async function testConfigUpdate() {
+            // 等待配置更新
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const config = await apiClient.get(`${API_BASE_URL}/config/`);
+            const rerankingConfig = config.config.reranking;
+            
+            if (rerankingConfig.batch_size === 128 && rerankingConfig.max_length === 2048) {
+                return { success: true, message: '配置参数已正确更新' };
+            } else {
+                return { success: false, message: `配置未更新: batch_size=${rerankingConfig.batch_size}, max_length=${rerankingConfig.max_length}` };
+            }
+        }
+
+        async function testParameterPersistence() {
+            // 模拟页面重新加载后的配置获取
+            const config = await apiClient.get(`${API_BASE_URL}/config/`);
+            const rerankingConfig = config.config.reranking;
+            
+            const expectedValues = {
+                batch_size: 128,
+                max_length: 2048,
+                timeout: 120
+            };
+            
+            for (const [key, expectedValue] of Object.entries(expectedValues)) {
+                if (rerankingConfig[key] !== expectedValue) {
+                    return { success: false, message: `参数 ${key} 未持久化: 期望 ${expectedValue}, 实际 ${rerankingConfig[key]}` };
+                }
+            }
+            
+            return { success: true, message: '所有参数已正确持久化' };
+        }
+
+        // 辅助函数
+        function showMessage(message, type, targetId = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+            
+            if (targetId) {
+                const target = document.getElementById(targetId);
+                target.innerHTML = '';
+                target.appendChild(messageDiv);
+            } else {
+                document.body.appendChild(messageDiv);
+                setTimeout(() => messageDiv.remove(), 5000);
+            }
+        }
+
+        function addTestResult(testName, status, message, className) {
+            const testResults = document.getElementById('testResults');
+            const testItem = document.createElement('div');
+            testItem.className = `test-item ${className}`;
+            testItem.innerHTML = `<strong>${testName}</strong>: ${status}<br><small>${message}</small>`;
+            testResults.appendChild(testItem);
+        }
+
+        // 页面加载时自动加载配置
+        window.addEventListener('load', function() {
+            loadCurrentConfig();
+        });
+    </script>
+</body>
+</html>

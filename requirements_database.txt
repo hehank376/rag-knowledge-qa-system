@@ -1,0 +1,22 @@
+# 数据库依赖包
+# 基础依赖
+aiosqlite>=0.19.0          # SQLite异步支持
+
+# 可选依赖 - PostgreSQL
+asyncpg>=0.28.0            # PostgreSQL异步驱动
+
+# 可选依赖 - MySQL
+aiomysql>=0.2.0            # MySQL异步驱动
+
+# 可选依赖 - Redis (用于缓存和会话存储)
+aioredis>=2.0.0            # Redis异步客户端
+
+# 可选依赖 - MongoDB
+motor>=3.3.0               # MongoDB异步驱动
+
+# 数据库迁移工具
+alembic>=1.12.0            # 数据库迁移工具
+
+# 连接池和ORM (可选)
+sqlalchemy>=2.0.0          # SQL工具包和ORM
+databases>=0.8.0           # 异步数据库接口

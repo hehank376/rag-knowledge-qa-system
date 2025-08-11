@@ -1,0 +1,250 @@
+# RAG Knowledge QA System - Monitoring Configuration
+
+# Prometheus Configuration
+prometheus:
+  enabled: true
+  port: 9090
+  metrics_path: "/metrics"
+  scrape_interval: "15s"
+  evaluation_interval: "15s"
+  
+  # Scrape configurations
+  scrape_configs:
+    - job_name: "rag-api"
+      static_configs:
+        - targets: ["rag-api:8000"]
+      metrics_path: "/metrics"
+      scrape_interval: "15s"
+    
+    - job_name: "postgres"
+      static_configs:
+        - targets: ["postgres:5432"]
+      scrape_interval: "30s"
+    
+    - job_name: "redis"
+      static_configs:
+        - targets: ["redis:6379"]
+      scrape_interval: "30s"
+
+# Grafana Configuration
+grafana:
+  enabled: true
+  port: 3000
+  admin_user: "admin"
+  admin_password: "${GRAFANA_PASSWORD}"
+  
+  # Data sources
+  datasources:
+    - name: "Prometheus"
+      type: "prometheus"
+      url: "http://prometheus:9090"
+      access: "proxy"
+      is_default: true
+
+# Alerting Configuration
+alerting:
+  enabled: true
+  
+  # Alert rules
+  rules:
+    - name: "rag_system_alerts"
+      rules:
+        - alert: "HighErrorRate"
+          expr: "rate(http_requests_total{status=~'5..'}[5m]) > 0.1"
+          for: "2m"
+          labels:
+            severity: "critical"
+          annotations:
+            summary: "High error rate detected"
+            description: "Error rate is above 10% for 2 minutes"
+        
+        - alert: "HighResponseTime"
+          expr: "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2"
+          for: "5m"
+          labels:
+            severity: "warning"
+          annotations:
+            summary: "High response time detected"
+            description: "95th percentile response time is above 2 seconds"
+        
+        - alert: "DatabaseConnectionFailure"
+          expr: "up{job='postgres'} == 0"
+          for: "1m"
+          labels:
+            severity: "critical"
+          annotations:
+            summary: "Database connection failure"
+            description: "PostgreSQL database is not responding"
+        
+        - alert: "VectorDatabaseDown"
+          expr: "up{job='chroma'} == 0"
+          for: "1m"
+          labels:
+            severity: "critical"
+          annotations:
+            summary: "Vector database is down"
+            description: "Chroma vector database is not responding"
+        
+        - alert: "HighMemoryUsage"
+          expr: "container_memory_usage_bytes / container_spec_memory_limit_bytes > 0.8"
+          for: "5m"
+          labels:
+            severity: "warning"
+          annotations:
+            summary: "High memory usage"
+            description: "Container memory usage is above 80%"
+        
+        - alert: "HighCPUUsage"
+          expr: "rate(container_cpu_usage_seconds_total[5m]) > 0.8"
+          for: "5m"
+          labels:
+            severity: "warning"
+          annotations:
+            summary: "High CPU usage"
+            description: "Container CPU usage is above 80%"
+
+# Notification Configuration
+notifications:
+  enabled: true
+  
+  # Webhook notifications
+  webhooks:
+    - name: "slack"
+      url: "${SLACK_WEBHOOK_URL}"
+      channel: "#alerts"
+      username: "RAG System Monitor"
+      title: "RAG System Alert"
+      
+  # Email notifications
+  email:
+    enabled: false
+    smtp_server: "${SMTP_SERVER}"
+    smtp_port: 587
+    username: "${SMTP_USERNAME}"
+    password: "${SMTP_PASSWORD}"
+    from: "alerts@yourdomain.com"
+    to: ["admin@yourdomain.com"]
+
+# Health Check Configuration
+health_checks:
+  enabled: true
+  interval: "30s"
+  timeout: "10s"
+  
+  endpoints:
+    - name: "api_health"
+      url: "http://rag-api:8000/health"
+      expected_status: 200
+      
+    - name: "database_health"
+      url: "http://postgres:5432"
+      type: "tcp"
+      
+    - name: "vector_db_health"
+      url: "http://chroma:8001/api/v1/heartbeat"
+      expected_status: 200
+      
+    - name: "redis_health"
+      url: "http://redis:6379"
+      type: "tcp"
+
+# Log Aggregation Configuration
+logging:
+  enabled: true
+  
+  # Log levels to collect
+  levels:
+    - "ERROR"
+    - "WARNING"
+    - "INFO"
+  
+  # Log sources
+  sources:
+    - name: "api_logs"
+      path: "/app/logs/app.log"
+      type: "file"
+      
+    - name: "error_logs"
+      path: "/app/logs/error.log"
+      type: "file"
+      
+    - name: "nginx_access"
+      path: "/var/log/nginx/access.log"
+      type: "file"
+      
+    - name: "nginx_error"
+      path: "/var/log/nginx/error.log"
+      type: "file"
+
+# Performance Monitoring
+performance:
+  enabled: true
+  
+  # Metrics to collect
+  metrics:
+    - name: "request_rate"
+      type: "counter"
+      description: "HTTP requests per second"
+      
+    - name: "response_time"
+      type: "histogram"
+      description: "HTTP response time distribution"
+      
+    - name: "error_rate"
+      type: "counter"
+      description: "HTTP error rate"
+      
+    - name: "database_connections"
+      type: "gauge"
+      description: "Active database connections"
+      
+    - name: "vector_operations"
+      type: "counter"
+      description: "Vector database operations"
+      
+    - name: "memory_usage"
+      type: "gauge"
+      description: "Memory usage percentage"
+      
+    - name: "cpu_usage"
+      type: "gauge"
+      description: "CPU usage percentage"
+
+# Dashboard Configuration
+dashboards:
+  enabled: true
+  
+  # Dashboard definitions
+  definitions:
+    - name: "system_overview"
+      title: "RAG System Overview"
+      panels:
+        - title: "Request Rate"
+          type: "graph"
+          targets:
+            - expr: "rate(http_requests_total[5m])"
+              legend: "Requests/sec"
+        
+        - title: "Response Time"
+          type: "graph"
+          targets:
+            - expr: "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))"
+              legend: "95th percentile"
+            - expr: "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))"
+              legend: "50th percentile"
+        
+        - title: "Error Rate"
+          type: "graph"
+          targets:
+            - expr: "rate(http_requests_total{status=~'5..'}[5m])"
+              legend: "5xx errors/sec"
+            - expr: "rate(http_requests_total{status=~'4..'}[5m])"
+              legend: "4xx errors/sec"
+        
+        - title: "System Resources"
+          type: "graph"
+          targets:
+            - expr: "container_memory_usage_bytes / container_spec_memory_limit_bytes * 100"
+              legend: "Memory %"
+            - expr: "rate(container_cpu_usage_seconds_total[5m]) * 100"
+              legend: "CPU %"

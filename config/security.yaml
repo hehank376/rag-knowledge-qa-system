@@ -1,0 +1,304 @@
+# RAG Knowledge QA System - Security Configuration
+
+# Authentication Configuration
+authentication:
+  enabled: true
+  type: "jwt"  # jwt, oauth2, api_key
+  
+  jwt:
+    secret_key: "${JWT_SECRET_KEY}"
+    algorithm: "HS256"
+    access_token_expire_minutes: 30
+    refresh_token_expire_days: 7
+    issuer: "rag-system"
+    audience: "rag-users"
+  
+  oauth2:
+    enabled: false
+    providers:
+      google:
+        client_id: "${GOOGLE_CLIENT_ID}"
+        client_secret: "${GOOGLE_CLIENT_SECRET}"
+        redirect_uri: "https://yourdomain.com/auth/google/callback"
+      
+      github:
+        client_id: "${GITHUB_CLIENT_ID}"
+        client_secret: "${GITHUB_CLIENT_SECRET}"
+        redirect_uri: "https://yourdomain.com/auth/github/callback"
+
+# Authorization Configuration
+authorization:
+  enabled: true
+  
+  # Role-based access control
+  rbac:
+    enabled: true
+    roles:
+      admin:
+        permissions:
+          - "documents:read"
+          - "documents:write"
+          - "documents:delete"
+          - "qa:read"
+          - "qa:write"
+          - "config:read"
+          - "config:write"
+          - "monitoring:read"
+          - "users:read"
+          - "users:write"
+      
+      user:
+        permissions:
+          - "documents:read"
+          - "documents:write"
+          - "qa:read"
+          - "qa:write"
+      
+      readonly:
+        permissions:
+          - "documents:read"
+          - "qa:read"
+
+# Rate Limiting Configuration
+rate_limiting:
+  enabled: true
+  
+  # Global rate limits
+  global:
+    requests_per_minute: 1000
+    burst_size: 100
+  
+  # Per-endpoint rate limits
+  endpoints:
+    "/api/documents/upload":
+      requests_per_minute: 10
+      burst_size: 2
+    
+    "/api/qa/ask":
+      requests_per_minute: 60
+      burst_size: 10
+    
+    "/api/auth/login":
+      requests_per_minute: 5
+      burst_size: 1
+  
+  # Per-user rate limits
+  per_user:
+    requests_per_minute: 100
+    burst_size: 20
+
+# Input Validation Configuration
+input_validation:
+  enabled: true
+  
+  # File upload validation
+  file_upload:
+    max_file_size: 104857600  # 100MB
+    allowed_extensions:
+      - "pdf"
+      - "docx"
+      - "txt"
+      - "md"
+    scan_for_malware: true
+    quarantine_suspicious: true
+  
+  # Text input validation
+  text_input:
+    max_length: 10000
+    allowed_characters: "alphanumeric_extended"
+    filter_html: true
+    filter_sql: true
+    filter_script: true
+  
+  # API parameter validation
+  api_parameters:
+    strict_validation: true
+    reject_unknown_fields: true
+    sanitize_inputs: true
+
+# Encryption Configuration
+encryption:
+  enabled: true
+  
+  # Data at rest encryption
+  at_rest:
+    algorithm: "AES-256-GCM"
+    key_rotation_days: 90
+    encrypt_database: true
+    encrypt_files: true
+    encrypt_logs: false
+  
+  # Data in transit encryption
+  in_transit:
+    tls_version: "1.3"
+    cipher_suites:
+      - "TLS_AES_256_GCM_SHA384"
+      - "TLS_CHACHA20_POLY1305_SHA256"
+      - "TLS_AES_128_GCM_SHA256"
+    hsts_enabled: true
+    hsts_max_age: 31536000
+
+# Session Management Configuration
+session_management:
+  enabled: true
+  
+  session:
+    secure: true
+    http_only: true
+    same_site: "strict"
+    max_age: 3600  # 1 hour
+    
+  csrf:
+    enabled: true
+    token_length: 32
+    header_name: "X-CSRF-Token"
+
+# Security Headers Configuration
+security_headers:
+  enabled: true
+  
+  headers:
+    "X-Content-Type-Options": "nosniff"
+    "X-Frame-Options": "DENY"
+    "X-XSS-Protection": "1; mode=block"
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
+    "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+    "Referrer-Policy": "strict-origin-when-cross-origin"
+    "Permissions-Policy": "geolocation=(), microphone=(), camera=()"
+
+# Audit Logging Configuration
+audit_logging:
+  enabled: true
+  
+  # Events to log
+  events:
+    - "authentication_success"
+    - "authentication_failure"
+    - "authorization_failure"
+    - "document_upload"
+    - "document_delete"
+    - "config_change"
+    - "user_creation"
+    - "user_deletion"
+    - "password_change"
+    - "permission_change"
+  
+  # Log format
+  format: "json"
+  
+  # Log retention
+  retention_days: 365
+  
+  # Log storage
+  storage:
+    type: "file"
+    path: "/app/logs/audit.log"
+    rotate: true
+    max_size: "100MB"
+    backup_count: 10
+
+# Vulnerability Scanning Configuration
+vulnerability_scanning:
+  enabled: true
+  
+  # Dependency scanning
+  dependencies:
+    enabled: true
+    scan_interval: "daily"
+    auto_update: false
+    severity_threshold: "medium"
+  
+  # Container scanning
+  containers:
+    enabled: true
+    scan_on_build: true
+    scan_interval: "weekly"
+    registry_scanning: true
+  
+  # Code scanning
+  code:
+    enabled: true
+    static_analysis: true
+    dynamic_analysis: false
+    scan_on_commit: true
+
+# Backup Security Configuration
+backup_security:
+  enabled: true
+  
+  encryption:
+    enabled: true
+    algorithm: "AES-256-GCM"
+    key_derivation: "PBKDF2"
+    iterations: 100000
+  
+  access_control:
+    enabled: true
+    require_authentication: true
+    allowed_roles: ["admin"]
+  
+  integrity:
+    enabled: true
+    checksum_algorithm: "SHA-256"
+    verify_on_restore: true
+
+# Network Security Configuration
+network_security:
+  enabled: true
+  
+  # Firewall rules
+  firewall:
+    enabled: true
+    default_policy: "deny"
+    rules:
+      - port: 80
+        protocol: "tcp"
+        action: "allow"
+        source: "any"
+      - port: 443
+        protocol: "tcp"
+        action: "allow"
+        source: "any"
+      - port: 22
+        protocol: "tcp"
+        action: "allow"
+        source: "admin_network"
+  
+  # DDoS protection
+  ddos_protection:
+    enabled: true
+    threshold_requests_per_second: 100
+    threshold_connections_per_ip: 50
+    block_duration_minutes: 60
+  
+  # IP whitelisting/blacklisting
+  ip_filtering:
+    enabled: false
+    whitelist: []
+    blacklist: []
+
+# Compliance Configuration
+compliance:
+  enabled: true
+  
+  # GDPR compliance
+  gdpr:
+    enabled: true
+    data_retention_days: 365
+    right_to_be_forgotten: true
+    data_portability: true
+    consent_management: true
+  
+  # SOC 2 compliance
+  soc2:
+    enabled: true
+    access_logging: true
+    change_management: true
+    incident_response: true
+  
+  # ISO 27001 compliance
+  iso27001:
+    enabled: true
+    risk_assessment: true
+    security_policies: true
+    incident_management: true

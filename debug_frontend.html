@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端调试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stats-display {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            min-width: 100px;
+        }
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>前端调试页面</h1>
+    
+    <div class="debug-section">
+        <h2>API测试</h2>
+        <button class="btn" onclick="testDocumentStatsAPI()">测试统计API</button>
+        <button class="btn" onclick="testDocumentListAPI()">测试文档列表API</button>
+        <button class="btn" onclick="testFrontendAPI()">测试前端API客户端</button>
+        <button class="btn" onclick="clearLog()">清空日志</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>统计显示</h2>
+        <div class="stats-display">
+            <div class="stat-card">
+                <div class="stat-number" id="totalDocs">0</div>
+                <div class="stat-label">总文档数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="readyDocs">0</div>
+                <div class="stat-label">已就绪</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="processingDocs">0</div>
+                <div class="stat-label">处理中</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="errorDocs">0</div>
+                <div class="stat-label">处理失败</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>调试日志</h2>
+        <div class="log" id="debugLog"></div>
+    </div>
+
+    <!-- 加载前端API客户端 -->
+    <script src="/frontend/js/api.js"></script>
+    
+    <script>
+        function log(message) {
+            const logElement = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('debugLog').textContent = '';
+        }
+
+        async function testDocumentStatsAPI() {
+            log('测试统计API...');
+            
+            try {
+                const response = await fetch('http://localhost:8000/documents/stats/summary');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const stats = response.json();
+                log('统计API响应: ' + JSON.stringify(stats, null, 2));
+                
+                updateStatsDisplay(stats);
+                
+            } catch (error) {
+                log('统计API错误: ' + error.message);
+            }
+        }
+
+        async function testDocumentListAPI() {
+            log('测试文档列表API...');
+            
+            try {
+                const response = await fetch('http://localhost:8000/documents/');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                log('文档列表API响应: ' + JSON.stringify(data, null, 2));
+                
+            } catch (error) {
+                log('文档列表API错误: ' + error.message);
+            }
+        }
+
+        async function testFrontendAPI() {
+            log('测试前端API客户端...');
+            
+            try {
+                // 检查API客户端是否可用
+                if (typeof apiClient === 'undefined') {
+                    log('错误: apiClient未定义，检查api.js是否正确加载');
+                    return;
+                }
+                
+                log('API客户端已加载，测试getDocumentStats()...');
+                
+                const stats = await apiClient.getDocumentStats();
+                log('前端API客户端响应: ' + JSON.stringify(stats, null, 2));
+                
+                updateStatsDisplay(stats);
+                
+            } catch (error) {
+                log('前端API客户端错误: ' + error.message);
+                console.error('详细错误:', error);
+            }
+        }
+
+        function updateStatsDisplay(stats) {
+            if (!stats) {
+                log('警告: 统计数据为空');
+                return;
+            }
+
+            const totalDocs = document.getElementById('totalDocs');
+            const readyDocs = document.getElementById('readyDocs');
+            const processingDocs = document.getElementById('processingDocs');
+            const errorDocs = document.getElementById('errorDocs');
+
+            if (totalDocs) totalDocs.textContent = stats.total_documents || 0;
+            if (readyDocs) readyDocs.textContent = stats.ready_documents || 0;
+            if (processingDocs) processingDocs.textContent = stats.processing_documents || 0;
+            if (errorDocs) errorDocs.textContent = stats.error_documents || 0;
+            
+            log('统计显示已更新');
+        }
+
+        // 页面加载时自动测试
+        window.addEventListener('load', () => {
+            log('页面加载完成');
+            log('检查API客户端可用性...');
+            
+            if (typeof apiClient !== 'undefined') {
+                log('✅ API客户端已加载');
+                testFrontendAPI();
+            } else {
+                log('❌ API客户端未加载，将在1秒后重试...');
+                setTimeout(() => {
+                    if (typeof apiClient !== 'undefined') {
+                        log('✅ API客户端延迟加载成功');
+                        testFrontendAPI();
+                    } else {
+                        log('❌ API客户端仍未加载');
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知系统测试</title>
+    <link rel="stylesheet" href="frontend/styles/main.css">
+    <link rel="stylesheet" href="frontend/styles/themes.css">
+    <link rel="stylesheet" href="frontend/styles/components.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .test-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .test-btn.success { background: #10b981; color: white; }
+        .test-btn.error { background: #ef4444; color: white; }
+        .test-btn.warning { background: #f59e0b; color: white; }
+        .test-btn.info { background: #06b6d4; color: white; }
+    </style>
+</head>
+<body>
+    <h1>通知系统测试</h1>
+    
+    <div class="test-buttons">
+        <button class="test-btn success" onclick="testSuccess()">测试成功通知</button>
+        <button class="test-btn error" onclick="testError()">测试错误通知</button>
+        <button class="test-btn warning" onclick="testWarning()">测试警告通知</button>
+        <button class="test-btn info" onclick="testInfo()">测试信息通知</button>
+        <button class="test-btn" onclick="testOldStyle()">测试旧式调用</button>
+        <button class="test-btn" onclick="testNewStyle()">测试新式调用</button>
+    </div>
+
+    <div id="notifications"></div>
+
+    <script src="frontend/js/notifications.js"></script>
+    <script>
+        function testSuccess() {
+            if (window.notificationManager) {
+                notificationManager.success('这是一个成功消息！');
+            } else {
+                console.error('notificationManager not available');
+            }
+        }
+
+        function testError() {
+            if (window.notificationManager) {
+                notificationManager.error('这是一个错误消息！');
+            } else {
+                console.error('notificationManager not available');
+            }
+        }
+
+        function testWarning() {
+            if (window.notificationManager) {
+                notificationManager.warning('这是一个警告消息！');
+            } else {
+                console.error('notificationManager not available');
+            }
+        }
+
+        function testInfo() {
+            if (window.notificationManager) {
+                notificationManager.info('这是一个信息消息！');
+            } else {
+                console.error('notificationManager not available');
+            }
+        }
+
+        function testOldStyle() {
+            if (window.notificationManager) {
+                notificationManager.show('这是旧式调用方式的消息', 'error');
+            } else {
+                console.error('notificationManager not available');
+            }
+        }
+
+        function testNewStyle() {
+            if (window.notificationManager) {
+                notificationManager.show({
+                    type: 'info',
+                    title: '新式调用',
+                    message: '这是新式调用方式的消息，带有标题'
+                });
+            } else {
+                console.error('notificationManager not available');
+            }
+        }
+
+        // 等待DOM加载完成后测试
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                console.log('notificationManager:', window.notificationManager);
+                if (window.notificationManager) {
+                    console.log('通知系统已加载');
+                } else {
+                    console.error('通知系统未加载');
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

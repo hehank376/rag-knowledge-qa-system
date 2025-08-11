@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG知识问答系统 - 演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .demo-section {
+            padding: 40px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #4facfe;
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #4facfe;
+        }
+
+        .feature-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .demo-button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .status-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .status-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+        }
+
+        .status-online {
+            background: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+        }
+
+        .status-offline {
+            background: #dc3545;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+        }
+
+        .status-warning {
+            background: #ffc107;
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+        }
+
+        .qa-demo {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 2px solid #e9ecef;
+        }
+
+        .qa-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            margin-bottom: 15px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .qa-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.2);
+        }
+
+        .qa-response {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #4facfe;
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            background: #343a40;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        .footer a {
+            color: #4facfe;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> RAG知识问答系统</h1>
+            <p>基于检索增强生成的智能知识问答平台</p>
+        </div>
+
+        <!-- 演示内容 -->
+        <div class="demo-section">
+            <!-- 系统状态 -->
+            <div class="status-section">
+                <h2 style="margin-bottom: 20px; color: #333;">
+                    <i class="fas fa-heartbeat"></i> 系统状态
+                </h2>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-indicator" id="api-status"></div>
+                        <h4>API服务</h4>
+                        <p id="api-text">检查中...</p>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator" id="health-status"></div>
+                        <h4>系统健康</h4>
+                        <p id="health-text">检查中...</p>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator" id="docs-status"></div>
+                        <h4>文档服务</h4>
+                        <p id="docs-text">检查中...</p>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-indicator" id="qa-status"></div>
+                        <h4>问答服务</h4>
+                        <p id="qa-text">检查中...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能特性 -->
+            <h2 style="margin-bottom: 30px; color: #333; text-align: center;">
+                <i class="fas fa-star"></i> 核心功能
+            </h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h3 class="feature-title">文档管理</h3>
+                    <p class="feature-description">
+                        支持PDF、DOCX、TXT、MD等多种格式文档上传，
+                        智能解析和向量化处理，构建知识库。
+                    </p>
+                    <button class="demo-button" onclick="testDocuments()">
+                        <i class="fas fa-play"></i> 测试文档API
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="feature-title">智能问答</h3>
+                    <p class="feature-description">
+                        基于上传的文档内容，使用RAG技术提供准确、
+                        有来源依据的智能问答服务。
+                    </p>
+                    <button class="demo-button" onclick="showQADemo()">
+                        <i class="fas fa-play"></i> 体验问答
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3 class="feature-title">会话管理</h3>
+                    <p class="feature-description">
+                        完整的对话历史记录，支持会话管理、
+                        搜索和导出功能。
+                    </p>
+                    <button class="demo-button" onclick="testSessions()">
+                        <i class="fas fa-play"></i> 测试会话API
+                    </button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="feature-title">系统配置</h3>
+                    <p class="feature-description">
+                        灵活的系统配置管理，支持多种LLM和
+                        嵌入模型，可根据需求调整参数。
+                    </p>
+                    <button class="demo-button" onclick="testConfig()">
+                        <i class="fas fa-play"></i> 测试配置API
+                    </button>
+                </div>
+            </div>
+
+            <!-- 问答演示 -->
+            <div class="qa-demo" id="qa-demo" style="display: none;">
+                <h3 style="margin-bottom: 20px; color: #333;">
+                    <i class="fas fa-robot"></i> 智能问答演示
+                </h3>
+                <textarea 
+                    class="qa-input" 
+                    id="question-input" 
+                    placeholder="请输入您的问题，例如：什么是RAG技术？"
+                ></textarea>
+                <button class="demo-button" onclick="askQuestion()">
+                    <i class="fas fa-paper-plane"></i> 提问
+                </button>
+                <div class="qa-response" id="qa-response">
+                    <h4><i class="fas fa-reply"></i> 系统回答：</h4>
+                    <p id="answer-text"></p>
+                    <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                        <strong>置信度：</strong> <span id="confidence"></span> | 
+                        <strong>响应时间：</strong> <span id="response-time"></span>ms
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            <p><strong>RAG知识问答系统</strong> - 基于检索增强生成技术</p>
+            <p>
+                <i class="fas fa-code"></i> 
+                完整的企业级AI问答解决方案 | 
+                <a href="http://localhost:8000/docs" target="_blank">
+                    <i class="fas fa-book"></i> API文档
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+
+        // 系统状态检查
+        async function checkSystemStatus() {
+            const checks = [
+                {
+                    name: 'api',
+                    url: `${API_BASE}/`,
+                    statusId: 'api-status',
+                    textId: 'api-text'
+                },
+                {
+                    name: 'health',
+                    url: `${API_BASE}/health`,
+                    statusId: 'health-status',
+                    textId: 'health-text'
+                },
+                {
+                    name: 'docs',
+                    url: `${API_BASE}/api/documents/`,
+                    statusId: 'docs-status',
+                    textId: 'docs-text'
+                },
+                {
+                    name: 'qa',
+                    url: `${API_BASE}/api/qa/ask`,
+                    statusId: 'qa-status',
+                    textId: 'qa-text',
+                    method: 'POST',
+                    body: { question: 'test' }
+                }
+            ];
+
+            for (const check of checks) {
+                try {
+                    const options = {
+                        method: check.method || 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    };
+                    
+                    if (check.body) {
+                        options.body = JSON.stringify(check.body);
+                    }
+
+                    const response = await fetch(check.url, options);
+                    const statusEl = document.getElementById(check.statusId);
+                    const textEl = document.getElementById(check.textId);
+
+                    if (response.ok) {
+                        statusEl.className = 'status-indicator status-online';
+                        textEl.textContent = '正常';
+                    } else {
+                        statusEl.className = 'status-indicator status-warning';
+                        textEl.textContent = `异常 (${response.status})`;
+                    }
+                } catch (error) {
+                    const statusEl = document.getElementById(check.statusId);
+                    const textEl = document.getElementById(check.textId);
+                    statusEl.className = 'status-indicator status-offline';
+                    textEl.textContent = '离线';
+                }
+            }
+        }
+
+        // 测试文档API
+        async function testDocuments() {
+            try {
+                const response = await fetch(`${API_BASE}/api/documents/`);
+                const data = await response.json();
+                alert(`文档API测试成功！\n返回数据：${JSON.stringify(data, null, 2)}`);
+            } catch (error) {
+                alert(`文档API测试失败：${error.message}`);
+            }
+        }
+
+        // 测试会话API
+        async function testSessions() {
+            try {
+                const response = await fetch(`${API_BASE}/api/sessions/`);
+                const data = await response.json();
+                alert(`会话API测试成功！\n返回数据：${JSON.stringify(data, null, 2)}`);
+            } catch (error) {
+                alert(`会话API测试失败：${error.message}`);
+            }
+        }
+
+        // 测试配置API
+        async function testConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/api/config/`);
+                const data = await response.json();
+                alert(`配置API测试成功！\n返回数据：${JSON.stringify(data, null, 2)}`);
+            } catch (error) {
+                alert(`配置API测试失败：${error.message}`);
+            }
+        }
+
+        // 显示问答演示
+        function showQADemo() {
+            const demoEl = document.getElementById('qa-demo');
+            demoEl.style.display = demoEl.style.display === 'none' ? 'block' : 'none';
+            if (demoEl.style.display === 'block') {
+                document.getElementById('question-input').focus();
+            }
+        }
+
+        // 提问
+        async function askQuestion() {
+            const questionInput = document.getElementById('question-input');
+            const responseEl = document.getElementById('qa-response');
+            const answerEl = document.getElementById('answer-text');
+            const confidenceEl = document.getElementById('confidence');
+            const timeEl = document.getElementById('response-time');
+
+            const question = questionInput.value.trim();
+            if (!question) {
+                alert('请输入问题！');
+                return;
+            }
+
+            // 显示加载状态
+            responseEl.style.display = 'block';
+            answerEl.innerHTML = '<div class="loading"></div> 正在思考中...';
+
+            const startTime = Date.now();
+
+            try {
+                const response = await fetch(`${API_BASE}/api/qa/ask`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question })
+                });
+
+                const data = await response.json();
+                const responseTime = Date.now() - startTime;
+
+                answerEl.textContent = data.answer || '抱歉，无法生成回答。';
+                confidenceEl.textContent = `${((data.confidence || 0) * 100).toFixed(1)}%`;
+                timeEl.textContent = responseTime;
+
+            } catch (error) {
+                answerEl.textContent = `请求失败：${error.message}`;
+                confidenceEl.textContent = '0%';
+                timeEl.textContent = Date.now() - startTime;
+            }
+        }
+
+        // 页面加载完成后检查系统状态
+        window.addEventListener('load', () => {
+            checkSystemStatus();
+            
+            // 每30秒检查一次状态
+            setInterval(checkSystemStatus, 30000);
+        });
+
+        // 回车键提问
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && event.ctrlKey) {
+                const qaDemo = document.getElementById('qa-demo');
+                if (qaDemo.style.display !== 'none') {
+                    askQuestion();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

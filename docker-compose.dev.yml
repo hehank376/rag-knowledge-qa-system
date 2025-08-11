@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # RAG System API (Development)
+  rag-api-dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: rag-knowledge-qa-api-dev
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - DATABASE_URL=postgresql://rag_user:rag_password@postgres-dev:5432/rag_db_dev
+      - CHROMA_HOST=chroma-dev
+      - CHROMA_PORT=8001
+      - REDIS_URL=redis://redis-dev:6379/0
+      - LOG_LEVEL=DEBUG
+      - RELOAD=true
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    depends_on:
+      - postgres-dev
+      - chroma-dev
+      - redis-dev
+    restart: unless-stopped
+    networks:
+      - rag-dev-network
+
+  # PostgreSQL Database (Development)
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: rag-postgres-dev
+    environment:
+      - POSTGRES_DB=rag_db_dev
+      - POSTGRES_USER=rag_user
+      - POSTGRES_PASSWORD=rag_password
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+    networks:
+      - rag-dev-network
+
+  # Chroma Vector Database (Development)
+  chroma-dev:
+    image: chromadb/chroma:latest
+    container_name: rag-chroma-dev
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+      - CHROMA_SERVER_HTTP_PORT=8001
+    volumes:
+      - chroma_dev_data:/chroma/chroma
+    ports:
+      - "8002:8001"
+    restart: unless-stopped
+    networks:
+      - rag-dev-network
+
+  # Redis Cache (Development)
+  redis-dev:
+    image: redis:7-alpine
+    container_name: rag-redis-dev
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_dev_data:/data
+    ports:
+      - "6380:6379"
+    restart: unless-stopped
+    networks:
+      - rag-dev-network
+
+volumes:
+  postgres_dev_data:
+  chroma_dev_data:
+  redis_dev_data:
+
+networks:
+  rag-dev-network:
+    driver: bridge

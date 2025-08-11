@@ -1,0 +1,515 @@
+/**
+ * Settings Interface Styles
+ * Styles for the system configuration interface
+ */
+
+/* Settings Container */
+.settings-container {
+    display: flex;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 600px;
+}
+
+/* Settings Navigation */
+.settings-nav {
+    flex: 0 0 250px;
+    background: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 1rem;
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.nav-item:hover {
+    background: var(--hover-color);
+    color: var(--text-primary);
+}
+
+.nav-item.active {
+    background: var(--primary-background);
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.nav-item i {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-item span {
+    font-size: 0.95rem;
+}
+
+/* Settings Content */
+.settings-content {
+    flex: 1;
+    background: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.settings-section {
+    display: none;
+    padding: 2rem;
+}
+
+.settings-section.active {
+    display: block;
+}
+
+.section-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.section-header h2 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.section-header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Settings Form */
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.form-input,
+.form-select {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--background-color);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-background);
+}
+
+.form-input.error {
+    border-color: var(--error-color);
+    box-shadow: 0 0 0 3px var(--error-background);
+}
+
+.form-input[type="password"] {
+    font-family: monospace;
+}
+
+.form-range {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--border-color);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+.form-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.form-range::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px var(--primary-background);
+}
+
+.form-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.range-value {
+    display: inline-block;
+    min-width: 40px;
+    text-align: center;
+    font-weight: 500;
+    color: var(--primary-color);
+    background: var(--primary-background);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    cursor: pointer;
+    margin: 0;
+    font-weight: 400;
+}
+
+.form-help {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.error-message {
+    color: var(--error-color);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.error-message::before {
+    content: "⚠️";
+    font-size: 0.8rem;
+}
+
+/* Settings Actions */
+.settings-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding: 1.5rem 2rem;
+    background: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+    margin: 2rem -2rem -2rem;
+}
+
+.settings-actions .btn {
+    min-width: 120px;
+}
+
+.btn.has-changes {
+    background: var(--warning-color);
+    border-color: var(--warning-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Test Results Modal */
+.test-results {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.test-result {
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.test-result.success {
+    background: var(--success-background);
+    border-color: var(--success-color);
+}
+
+.test-result.error {
+    background: var(--error-background);
+    border-color: var(--error-color);
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.result-header i {
+    font-size: 1.1rem;
+}
+
+.test-result.success .result-header i {
+    color: var(--success-color);
+}
+
+.test-result.error .result-header i {
+    color: var(--error-color);
+}
+
+.result-title {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.result-message {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.result-details {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .settings-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .settings-nav {
+        flex: none;
+        position: static;
+        display: flex;
+        overflow-x: auto;
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .nav-item {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        margin-bottom: 0;
+        margin-right: 0.5rem;
+    }
+
+    .nav-item:last-child {
+        margin-right: 0;
+    }
+
+    .settings-section {
+        padding: 1.5rem;
+    }
+
+    .section-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .settings-actions {
+        flex-direction: column;
+        align-items: stretch;
+        margin: 1.5rem -1.5rem -1.5rem;
+        padding: 1rem 1.5rem;
+    }
+
+    .settings-actions .btn {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .settings-nav {
+        padding: 0.5rem;
+    }
+
+    .nav-item {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .nav-item i {
+        font-size: 1rem;
+    }
+
+    .settings-section {
+        padding: 1rem;
+    }
+
+    .form-group {
+        gap: 0.4rem;
+    }
+
+    .form-input,
+    .form-select {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .form-help {
+        font-size: 0.8rem;
+    }
+
+    .settings-actions {
+        margin: 1rem -1rem -1rem;
+        padding: 1rem;
+    }
+}
+
+/* Dark Theme Adjustments */
+.dark-theme .form-input,
+.dark-theme .form-select {  
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+
+.dark-theme .form-select option {
+    background-color: var(--select-option-bg, var(--card-background));
+    color: var(--select-option-text, var(--text-primary));
+}
+
+.dark-theme .form-range {
+    background: var(--border-color);
+}
+
+.dark-theme .result-details {
+    background: var(--surface-color);
+}
+
+/* Animation for section switching */
+.settings-section {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading states */
+.form-input:disabled,
+.form-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn .fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Validation states */
+.form-group.has-error .form-input {
+    border-color: var(--error-color);
+}
+
+.form-group.has-success .form-input {
+    border-color: var(--success-color);
+}
+
+/* Tooltips for help text */
+.form-help {
+    position: relative;
+}
+
+.form-help:hover {
+    color: var(--text-primary);
+}
+
+/* Focus management */
+.settings-section:focus-within .form-group {
+    transition: all 0.2s ease;
+}
+
+.form-input:focus + .form-help {
+    color: var(--primary-color);
+}
+
+/* Grid layout for form groups */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}

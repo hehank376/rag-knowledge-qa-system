@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 3px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>QA功能测试页面</h1>
+    
+    <div class="test-section">
+        <h2>1. 工具函数测试</h2>
+        <button onclick="testFormatTime()">测试formatTime函数</button>
+        <button onclick="testFormatDate()">测试formatDate函数</button>
+        <button onclick="testFormatDateTime()">测试formatDateTime函数</button>
+        <div id="function-test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 时间显示测试</h2>
+        <p>当前时间（formatTime）: <span id="current-time"></span></p>
+        <p>当前日期（formatDate）: <span id="current-date"></span></p>
+        <p>当前日期时间（formatDateTime）: <span id="current-datetime"></span></p>
+        <button onclick="updateTimeDisplay()">更新时间显示</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. 消息格式测试</h2>
+        <button onclick="testMessageFormat()">测试消息格式化</button>
+        <div id="message-test-results"></div>
+    </div>
+
+    <script src="frontend/js/utils.js"></script>
+    <script>
+        function testFormatTime() {
+            const results = document.getElementById('function-test-results');
+            try {
+                const now = new Date();
+                const timeStr = formatTime(now);
+                results.innerHTML += `<div class="test-result success">formatTime测试成功: ${timeStr}</div>`;
+                
+                // 测试边界情况
+                const nullResult = formatTime(null);
+                const invalidResult = formatTime('invalid');
+                results.innerHTML += `<div class="test-result success">formatTime(null): "${nullResult}"</div>`;
+                results.innerHTML += `<div class="test-result success">formatTime('invalid'): "${invalidResult}"</div>`;
+            } catch (error) {
+                results.innerHTML += `<div class="test-result error">formatTime测试失败: ${error.message}</div>`;
+            }
+        }
+        
+        function testFormatDate() {
+            const results = document.getElementById('function-test-results');
+            try {
+                const now = new Date();
+                const dateStr = formatDate(now);
+                results.innerHTML += `<div class="test-result success">formatDate测试成功: ${dateStr}</div>`;
+            } catch (error) {
+                results.innerHTML += `<div class="test-result error">formatDate测试失败: ${error.message}</div>`;
+            }
+        }
+        
+        function testFormatDateTime() {
+            const results = document.getElementById('function-test-results');
+            try {
+                const now = new Date();
+                const dateTimeStr = formatDateTime(now);
+                results.innerHTML += `<div class="test-result success">formatDateTime测试成功: ${dateTimeStr}</div>`;
+            } catch (error) {
+                results.innerHTML += `<div class="test-result error">formatDateTime测试失败: ${error.message}</div>`;
+            }
+        }
+        
+        function updateTimeDisplay() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = formatTime(now);
+            document.getElementById('current-date').textContent = formatDate(now);
+            document.getElementById('current-datetime').textContent = formatDateTime(now);
+        }
+        
+        function testMessageFormat() {
+            const results = document.getElementById('message-test-results');
+            try {
+                // 模拟消息HTML生成
+                const message = "这是一条测试消息";
+                const time = formatTime(new Date());
+                
+                const messageHtml = `
+                    <div class="message-content">
+                        <div class="message-text">${message}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                `;
+                
+                results.innerHTML = `<div class="test-result success">消息格式化成功:<br><pre>${messageHtml}</pre></div>`;
+            } catch (error) {
+                results.innerHTML = `<div class="test-result error">消息格式化失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 页面加载时自动更新时间显示
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTimeDisplay();
+            
+            // 每秒更新时间
+            setInterval(updateTimeDisplay, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG知识问答系统</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/themes.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/document-manager.css">
+    <link rel="stylesheet" href="styles/qa-interface.css">
+    <link rel="stylesheet" href="styles/history-interface.css">
+    <link rel="stylesheet" href="styles/settings-interface.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="light-theme">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-brain"></i>
+                <span>RAG知识问答系统</span>
+            </div>
+
+            <div class="nav-menu">
+                <a href="#documents" class="nav-link active" data-tab="documents">
+                    <i class="fas fa-file-alt"></i>
+                    文档管理
+                </a>
+                <a href="#qa" class="nav-link" data-tab="qa">
+                    <i class="fas fa-comments"></i>
+                    智能问答
+                </a>
+                <a href="#history" class="nav-link" data-tab="history">
+                    <i class="fas fa-history"></i>
+                    历史记录
+                </a>
+                <a href="#settings" class="nav-link" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    系统设置
+                </a>
+            </div>
+
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="system-status" id="systemStatus">
+                    <i class="fas fa-circle status-indicator"></i>
+                    <span class="status-text">系统正常</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <!-- 文档管理页面 -->
+        <div class="tab-content active" id="documents">
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-file-alt"></i>
+                    文档管理
+                </h1>
+                <p class="page-description">上传、管理和查看您的知识库文档</p>
+            </div>
+
+            <!-- 文档上传区域 -->
+            <div class="upload-section">
+                <div class="upload-card">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">
+                            <h3>拖拽文件到此处或点击上传</h3>
+                            <p>支持 PDF, DOCX, TXT, MD 格式，最大 50MB</p>
+                        </div>
+                        <input type="file" id="fileInput" multiple accept=".pdf,.docx,.txt,.md" hidden>
+                        <button class="upload-btn" id="uploadBtn">
+                            <i class="fas fa-plus"></i>
+                            选择文件
+                        </button>
+                    </div>
+
+                    <!-- 上传进度 -->
+                    <div class="upload-progress" id="uploadProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="progressText">上传中...</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文档统计 -->
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-file"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalDocs">0</div>
+                        <div class="stat-label">总文档数</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon ready">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="readyDocs">0</div>
+                        <div class="stat-label">已就绪</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon processing">
+                        <i class="fas fa-spinner"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="processingDocs">0</div>
+                        <div class="stat-label">处理中</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="errorDocs">0</div>
+                        <div class="stat-label">处理失败</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文档列表 -->
+            <div class="documents-section">
+                <div class="section-header">
+                    <h2>文档列表</h2>
+                    <div class="section-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="搜索文档...">
+                        </div>
+                        <div class="filter-dropdown">
+                            <button class="filter-btn" id="filterBtn">
+                                <i class="fas fa-filter"></i>
+                                筛选
+                            </button>
+                            <div class="filter-menu" id="filterMenu">
+                                <label class="filter-option">
+                                    <input type="radio" name="status" value="all" checked>
+                                    <span>全部状态</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="radio" name="status" value="ready">
+                                    <span>已就绪</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="radio" name="status" value="processing">
+                                    <span>处理中</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="radio" name="status" value="error">
+                                    <span>处理失败</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button class="refresh-btn" id="refreshBtn" title="刷新列表">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="documents-list" id="documentsList">
+                    <!-- 文档项将通过 JavaScript 动态生成 -->
+                    <div class="loading-state" id="loadingState">
+                        <div class="loading-spinner"></div>
+                        <p>加载文档列表中...</p>
+                    </div>
+                </div>
+
+                <!-- 分页 -->
+                <div class="pagination" id="pagination" style="display: none;">
+                    <button class="page-btn" id="prevPage" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                        上一页
+                    </button>
+                    <div class="page-info">
+                        <span id="pageInfo">第 1 页，共 1 页</span>
+                    </div>
+                    <button class="page-btn" id="nextPage" disabled>
+                        下一页
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 智能问答页面 -->
+        <div class="tab-content" id="qa">
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-comments"></i>
+                    智能问答
+                </h1>
+                <p class="page-description">基于知识库的智能问答系统</p>
+            </div>
+
+            <div class="qa-interface" id="qa-interface">
+                <!-- 对话区域 -->
+                <div class="conversation-container">
+                    <div class="conversation-header">
+                        <div class="conversation-title">
+                            <i class="fas fa-robot"></i>
+                            <span>智能助手</span>
+                        </div>
+                        <div class="conversation-actions">
+                            <button class="btn btn-secondary btn-sm" id="clear-conversation" title="清空对话">
+                                <i class="fas fa-trash"></i>
+                                清空
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="export-conversation" title="导出对话">
+                                <i class="fas fa-download"></i>
+                                导出
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="conversation-area" id="conversation-area">
+                        <!-- 欢迎消息 -->
+                        <div class="welcome-message">
+                            <div class="welcome-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="welcome-content">
+                                <h3>欢迎使用智能问答系统</h3>
+                                <p>我可以基于您上传的文档回答问题。请确保已上传相关文档，然后开始提问吧！</p>
+                                <div class="welcome-tips">
+                                    <div class="tip-item">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <span>尽量使用具体、明确的问题</span>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-search"></i>
+                                        <span>我会在文档中搜索相关内容来回答</span>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-link"></i>
+                                        <span>答案会显示相关的文档来源</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 输入区域 -->
+                <div class="input-container">
+                    <form class="qa-form" id="qa-form">
+                        <div class="input-wrapper">
+                            <textarea id="question-input" class="question-input" placeholder="请输入您的问题..." rows="1"
+                                maxlength="1000"></textarea>
+                            <div class="input-actions">
+                                <div class="input-info">
+                                    <span class="char-count">0/1000</span>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="submit-question">
+                                    <i class="fas fa-paper-plane"></i>
+                                    发送
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史记录页面 -->
+        <div class="tab-content" id="history">
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-history"></i>
+                    历史记录
+                </h1>
+                <p class="page-description">查看和管理问答历史记录</p>
+            </div>
+
+            <!-- 历史记录统计 -->
+            <div class="history-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalSessions">0</div>
+                        <div class="stat-label">总会话数</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalQuestions">0</div>
+                        <div class="stat-label">总问题数</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="todaySessions">0</div>
+                        <div class="stat-label">今日会话</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="avgResponseTime">0s</div>
+                        <div class="stat-label">平均响应时间</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 搜索和筛选 -->
+            <div class="history-controls">
+                <div class="search-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="historySearchInput" placeholder="搜索会话内容...">
+                    </div>
+                    <div class="date-filter">
+                        <input type="date" id="startDate" class="date-input">
+                        <span class="date-separator">至</span>
+                        <input type="date" id="endDate" class="date-input">
+                    </div>
+                </div>
+
+                <div class="control-actions">
+                    <div class="sort-dropdown">
+                        <button class="sort-btn" id="sortBtn">
+                            <i class="fas fa-sort"></i>
+                            排序
+                        </button>
+                        <div class="sort-menu" id="sortMenu">
+                            <label class="sort-option">
+                                <input type="radio" name="sort" value="newest" checked>
+                                <span>最新优先</span>
+                            </label>
+                            <label class="sort-option">
+                                <input type="radio" name="sort" value="oldest">
+                                <span>最旧优先</span>
+                            </label>
+                            <label class="sort-option">
+                                <input type="radio" name="sort" value="most_questions">
+                                <span>问题最多</span>
+                            </label>
+                            <label class="sort-option">
+                                <input type="radio" name="sort" value="longest">
+                                <span>时长最长</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" id="clearHistoryBtn">
+                        <i class="fas fa-trash"></i>
+                        清空历史
+                    </button>
+
+                    <button class="btn btn-secondary" id="exportHistoryBtn">
+                        <i class="fas fa-download"></i>
+                        导出历史
+                    </button>
+
+                    <button class="btn btn-primary" id="refreshHistoryBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        刷新
+                    </button>
+                </div>
+            </div>
+
+            <!-- 会话列表 -->
+            <div class="sessions-section">
+                <div class="sessions-list" id="sessionsList">
+                    <!-- 会话项将通过 JavaScript 动态生成 -->
+                    <div class="loading-state" id="historyLoadingState">
+                        <div class="loading-spinner"></div>
+                        <p>加载历史记录中...</p>
+                    </div>
+                </div>
+
+                <!-- 分页 -->
+                <div class="pagination" id="historyPagination" style="display: none;">
+                    <button class="page-btn" id="historyPrevPage" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                        上一页
+                    </button>
+                    <div class="page-info">
+                        <span id="historyPageInfo">第 1 页，共 1 页</span>
+                    </div>
+                    <button class="page-btn" id="historyNextPage" disabled>
+                        下一页
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统设置页面 -->
+        <div class="tab-content" id="settings">
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-cog"></i>
+                    系统设置
+                </h1>
+                <p class="page-description">配置系统参数和偏好设置</p>
+            </div>
+
+            <div class="settings-container">
+                <!-- 设置导航 -->
+                <div class="settings-nav">
+                    <div class="nav-item active" data-section="general">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>常规设置</span>
+                    </div>
+                    <div class="nav-item" data-section="llm">
+                        <i class="fas fa-brain"></i>
+                        <span>语言模型</span>
+                    </div>
+                    <div class="nav-item" data-section="embedding">
+                        <i class="fas fa-vector-square"></i>
+                        <span>嵌入模型</span>
+                    </div>
+                    <div class="nav-item" data-section="retrieval">
+                        <i class="fas fa-search"></i>
+                        <span>检索设置</span>
+                    </div>
+                    <div class="nav-item" data-section="storage">
+                        <i class="fas fa-database"></i>
+                        <span>存储配置</span>
+                    </div>
+                    <div class="nav-item" data-section="advanced">
+                        <i class="fas fa-cogs"></i>
+                        <span>高级设置</span>
+                    </div>
+                </div>
+
+                <!-- 设置内容 -->
+                <div class="settings-content">
+                    <!-- 常规设置 -->
+                    <div class="settings-section active" id="general-section">
+                        <div class="section-header">
+                            <h2>常规设置</h2>
+                            <p>配置系统的基本参数和行为</p>
+                        </div>
+
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="systemName">系统名称</label>
+                                <input type="text" id="systemName" class="form-input" placeholder="RAG知识问答系统">
+                                <small class="form-help">显示在页面标题和导航栏的系统名称</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="defaultLanguage">默认语言</label>
+                                <select id="defaultLanguage" class="form-select">
+                                    <option value="zh-CN">简体中文</option>
+                                    <option value="en-US">English</option>
+                                    <option value="ja-JP">日本語</option>
+                                </select>
+                                <small class="form-help">系统界面的默认显示语言</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="maxFileSize">最大文件大小 (MB)</label>
+                                <input type="number" id="maxFileSize" class="form-input" min="1" max="100" value="50">
+                                <small class="form-help">单个文档文件的最大上传大小限制</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sessionTimeout">会话超时时间 (分钟)</label>
+                                <input type="number" id="sessionTimeout" class="form-input" min="5" max="1440"
+                                    value="60">
+                                <small class="form-help">用户会话的自动超时时间</small>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="enableLogging" checked>
+                                    <label for="enableLogging">启用详细日志记录</label>
+                                </div>
+                                <small class="form-help">记录系统操作的详细日志信息</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 语言模型设置 -->
+                    <div class="settings-section" id="llm-section">
+                        <div class="section-header">
+                            <h2>语言模型配置</h2>
+                            <p>配置用于生成答案的大语言模型</p>
+                        </div>
+
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="llmProvider">模型提供商</label>
+                                <select id="llmProvider" class="form-select">
+                                    <option value="openai">OpenAI</option>
+                                    <option value="siliconflow">SiliconFlow</option>
+                                    <option value="ollama">Ollama (本地)</option>
+                                    <option value="azure">Azure OpenAI</option>
+                                </select>
+                                <small class="form-help">选择语言模型的提供商</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="llmModel">模型名称</label>
+                                <input type="text" id="llmModel" class="form-input" placeholder="gpt-4">
+                                <small class="form-help">具体的模型名称，如 gpt-4, deepseek-chat 等</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="llmApiKey">API密钥</label>
+                                <input type="password" id="llmApiKey" class="form-input" placeholder="输入API密钥">
+                                <small class="form-help">访问语言模型服务的API密钥</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="llmBaseUrl">API基础URL</label>
+                                <input type="url" id="llmBaseUrl" class="form-input"
+                                    placeholder="https://api.openai.com/v1">
+                                <small class="form-help">API服务的基础URL地址</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="llmTemperature">温度参数</label>
+                                <input type="range" id="llmTemperature" class="form-range" min="0" max="2" step="0.1"
+                                    value="0.7">
+                                <div class="range-value">0.7</div>
+                                <small class="form-help">控制生成文本的随机性，0为确定性，2为最随机</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="llmMaxTokens">最大令牌数</label>
+                                <input type="number" id="llmMaxTokens" class="form-input" min="100" max="4000"
+                                    value="1000">
+                                <small class="form-help">单次生成的最大令牌数量</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模型配置设置 -->
+                    <div class="settings-section" id="embedding-section">
+                        <div class="section-header">
+                            <h2>模型配置</h2>
+                            <p>配置嵌入模型和重排序模型，支持统一的模型平台管理</p>
+                        </div>
+
+                        <div class="settings-form">
+                            <!-- 模型平台配置 -->
+                            <div class="model-platform-section">
+                                <h3><i class="fas fa-cloud"></i> 模型平台配置</h3>
+                                <div class="form-group">
+                                    <label for="modelProvider">模型提供商</label>
+                                    <select id="modelProvider" class="form-select">
+                                        <option value="openai">OpenAI</option>
+                                        <option value="siliconflow">SiliconFlow</option>
+                                        <option value="huggingface">Hugging Face</option>
+                                        <option value="sentence_transformers">Sentence Transformers</option>
+                                        <option value="local">本地模型</option>
+                                    </select>
+                                    <small class="form-help">选择统一的模型平台提供商</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="modelApiKey">API密钥</label>
+                                    <input type="password" id="modelApiKey" class="form-input" placeholder="输入API密钥">
+                                    <small class="form-help">访问模型服务的API密钥（本地模型无需填写）</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="modelBaseUrl">API基础URL</label>
+                                    <input type="url" id="modelBaseUrl" class="form-input"
+                                        placeholder="https://api.openai.com/v1">
+                                    <small class="form-help">模型服务的API基础地址</small>
+                                </div>
+                            </div>
+
+                            <!-- 嵌入模型配置 -->
+                            <div class="model-type-section">
+                                <h3><i class="fas fa-vector-square"></i> 嵌入模型配置</h3>
+
+                                <div class="form-group">
+                                    <label for="activeEmbeddingModel">当前活跃模型</label>
+                                    <div class="model-selector">
+                                        <select id="activeEmbeddingModel" class="form-select">
+                                            <option value="">选择嵌入模型...</option>
+                                        </select>
+                                        <button type="button" class="btn-refresh" onclick="refreshEmbeddingModels()"
+                                            title="刷新模型列表">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                    <small class="form-help">当前使用的嵌入模型</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="embeddingModel">嵌入模型名称</label>
+                                    <input type="text" id="embeddingModel" class="form-input"
+                                        placeholder="text-embedding-ada-002">
+                                    <small class="form-help">具体的嵌入模型名称</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="embeddingDimension">向量维度</label>
+                                    <input type="number" id="embeddingDimension" class="form-input" min="128" max="4096"
+                                        value="1536">
+                                    <small class="form-help">嵌入向量的维度大小</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="embeddingBatchSize">批处理大小</label>
+                                    <input type="number" id="embeddingBatchSize" class="form-input" min="1" max="1000"
+                                        value="100">
+                                    <small class="form-help">批量处理文档时的批次大小</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="chunkSize">文本块大小</label>
+                                    <input type="number" id="chunkSize" class="form-input" min="100" max="2000"
+                                        value="1000">
+                                    <small class="form-help">文档分割时每个文本块的字符数</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="chunkOverlap">文本块重叠</label>
+                                    <input type="number" id="chunkOverlap" class="form-input" min="0" max="500"
+                                        value="200">
+                                    <small class="form-help">相邻文本块之间的重叠字符数</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="embeddingTimeout">超时时间 (秒)</label>
+                                    <input type="number" id="embeddingTimeout" class="form-input" min="5" max="300"
+                                        value="30" step="0.1">
+                                    <small class="form-help">请求超时时间</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="model-actions">
+                                        <button type="button" class="btn-primary" onclick="addEmbeddingModel()">
+                                            <i class="fas fa-plus"></i> 添加嵌入模型
+                                        </button>
+                                        <button type="button" class="btn-secondary" onclick="testEmbeddingModel()">
+                                            <i class="fas fa-flask"></i> 测试模型
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 重排序模型配置 -->
+                            <div class="model-type-section">
+                                <h3><i class="fas fa-sort-amount-down"></i> 重排序模型配置</h3>
+
+                                <div class="form-group">
+                                    <label for="activeRerankingModel">当前活跃模型</label>
+                                    <div class="model-selector">
+                                        <select id="activeRerankingModel" class="form-select">
+                                            <option value="">选择重排序模型...</option>
+                                        </select>
+                                        <button type="button" class="btn-refresh" onclick="refreshRerankingModels()"
+                                            title="刷新模型列表">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                    <small class="form-help">当前使用的重排序模型</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="rerankingModel">重排序模型名称</label>
+                                    <input type="text" id="rerankingModel" class="form-input"
+                                        placeholder="cross-encoder/ms-marco-MiniLM-L-6-v2">
+                                    <small class="form-help">具体的重排序模型名称</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="rerankingBatchSize">批处理大小</label>
+                                    <input type="number" id="rerankingBatchSize" class="form-input" min="1" max="256"
+                                        value="32">
+                                    <small class="form-help">重排序时的批次大小</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="rerankingMaxLength">最大文本长度</label>
+                                    <input type="number" id="rerankingMaxLength" class="form-input" min="128" max="2048"
+                                        value="512">
+                                    <small class="form-help">重排序模型处理的最大文本长度</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="rerankingTimeout">超时时间 (秒)</label>
+                                    <input type="number" id="rerankingTimeout" class="form-input" min="5" max="300"
+                                        value="30" step="0.1">
+                                    <small class="form-help">重排序操作的超时时间</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="model-actions">
+                                        <button type="button" class="btn-primary" onclick="addRerankingModel()">
+                                            <i class="fas fa-plus"></i> 添加重排序模型
+                                        </button>
+                                        <button type="button" class="btn-secondary" onclick="testRerankingModel()">
+                                            <i class="fas fa-flask"></i> 测试模型
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 模型状态监控 -->
+                            <div class="model-status-section">
+                                <h3><i class="fas fa-chart-line"></i> 模型状态监控</h3>
+
+                                <div class="form-group">
+                                    <div class="model-actions">
+                                        <button type="button" class="btn-secondary" onclick="showModelStatus()">
+                                            <i class="fas fa-info-circle"></i> 查看模型状态
+                                        </button>
+                                        <button type="button" class="btn-secondary" onclick="showModelMetrics()">
+                                            <i class="fas fa-chart-bar"></i> 性能指标
+                                        </button>
+                                        <button type="button" class="btn-warning" onclick="performHealthCheck()">
+                                            <i class="fas fa-heartbeat"></i> 健康检查
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="modelStatusDisplay" class="status-display" style="display: none;">
+                                    <!-- 模型状态信息将在这里显示 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 检索设置 -->
+                    <div class="settings-section" id="retrieval-section">
+                        <div class="section-header">
+                            <h2>检索配置</h2>
+                            <p>配置文档检索和相似度匹配参数</p>
+                        </div>
+
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="topK">检索文档数量</label>
+                                <input type="number" id="topK" class="form-input" min="1" max="20" value="5">
+                                <small class="form-help">每次检索返回的相关文档数量</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="similarityThreshold">相似度阈值</label>
+                                <input type="range" id="similarityThreshold" class="form-range" min="0" max="1"
+                                    step="0.05" value="0.7">
+                                <div class="range-value">0.7</div>
+                                <small class="form-help">文档相似度的最低阈值，低于此值的文档将被过滤</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="searchMode">搜索模式</label>
+                                <select id="searchMode" class="form-select">
+                                    <option value="semantic">语义搜索</option>
+                                    <option value="keyword">关键词搜索</option>
+                                    <option value="hybrid">混合搜索</option>
+                                </select>
+                                <small class="form-help">文档检索时使用的搜索算法</small>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="enableRerank" checked>
+                                    <label for="enableRerank">启用重排序</label>
+                                </div>
+                                <small class="form-help">对检索结果进行二次排序以提高准确性</small>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="enableCache" checked>
+                                    <label for="enableCache">启用检索缓存</label>
+                                </div>
+                                <small class="form-help">缓存常见查询的检索结果以提高响应速度</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 存储配置 -->
+                    <div class="settings-section" id="storage-section">
+                        <div class="section-header">
+                            <h2>存储配置</h2>
+                            <p>配置数据库和向量存储相关参数</p>
+                        </div>
+
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="databaseType">数据库类型</label>
+                                <select id="databaseType" class="form-select">
+                                    <option value="sqlite">SQLite</option>
+                                    <option value="postgresql">PostgreSQL</option>
+                                    <option value="mysql">MySQL</option>
+                                </select>
+                                <small class="form-help">用于存储元数据的关系数据库类型</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="databaseUrl">数据库连接URL</label>
+                                <input type="text" id="databaseUrl" class="form-input"
+                                    placeholder="sqlite:///./database/rag_system.db">
+                                <small class="form-help">数据库的连接字符串</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vectorStore">向量数据库</label>
+                                <select id="vectorStore" class="form-select">
+                                    <option value="chroma">Chroma</option>
+                                    <option value="pinecone">Pinecone</option>
+                                    <option value="weaviate">Weaviate</option>
+                                    <option value="qdrant">Qdrant</option>
+                                </select>
+                                <small class="form-help">用于存储向量数据的数据库</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vectorStoreUrl">向量数据库URL</label>
+                                <input type="text" id="vectorStoreUrl" class="form-input" placeholder="./chroma_db">
+                                <small class="form-help">向量数据库的连接地址或存储路径</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="collectionName">集合名称</label>
+                                <input type="text" id="collectionName" class="form-input" placeholder="knowledge_base"
+                                    value="knowledge_base">
+                                <small class="form-help">向量数据库中的集合名称</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 高级设置 -->
+                    <div class="settings-section" id="advanced-section">
+                        <div class="section-header">
+                            <h2>高级设置</h2>
+                            <p>配置系统的高级参数和性能选项</p>
+                        </div>
+
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="maxConcurrentRequests">最大并发请求数</label>
+                                <input type="number" id="maxConcurrentRequests" class="form-input" min="1" max="100"
+                                    value="10">
+                                <small class="form-help">系统同时处理的最大请求数量</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="requestTimeout">请求超时时间 (秒)</label>
+                                <input type="number" id="requestTimeout" class="form-input" min="5" max="300"
+                                    value="30">
+                                <small class="form-help">单个请求的最大处理时间</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cacheSize">缓存大小 (MB)</label>
+                                <input type="number" id="cacheSize" class="form-input" min="10" max="1000" value="100">
+                                <small class="form-help">系统缓存的最大内存使用量</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="logLevel">日志级别</label>
+                                <select id="logLevel" class="form-select">
+                                    <option value="DEBUG">调试</option>
+                                    <option value="INFO" selected>信息</option>
+                                    <option value="WARNING">警告</option>
+                                    <option value="ERROR">错误</option>
+                                </select>
+                                <small class="form-help">系统日志的详细程度</small>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="enableMetrics">
+                                    <label for="enableMetrics">启用性能指标收集</label>
+                                </div>
+                                <small class="form-help">收集系统性能和使用统计数据</small>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="enableDebugMode">
+                                    <label for="enableDebugMode">启用调试模式</label>
+                                </div>
+                                <small class="form-help">启用详细的调试信息和错误追踪</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="settings-actions">
+                        <button class="btn btn-secondary" id="resetSettings">
+                            <i class="fas fa-undo"></i>
+                            重置为默认值
+                        </button>
+                        <button class="btn btn-secondary" id="testConnection">
+                            <i class="fas fa-plug"></i>
+                            测试连接
+                        </button>
+                        <button class="btn btn-primary" id="saveSettings">
+                            <i class="fas fa-save"></i>
+                            保存设置
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 模态框 -->
+    <div class="modal" id="documentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">文档详情</h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 内容将通过 JavaScript 动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知系统 -->
+    <div class="notifications" id="notifications"></div>
+
+    <style>
+        /* 模型管理相关样式 */
+        .model-platform-section,
+        .model-type-section,
+        .model-status-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .model-platform-section h3,
+        .model-type-section h3,
+        .model-status-section h3 {
+            margin: 0 0 15px 0;
+            color: #495057;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .model-selector {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .model-selector select {
+            flex: 1;
+        }
+
+        .btn-refresh {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-refresh:hover {
+            background: #545b62;
+        }
+
+        .model-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .status-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .model-status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin: 4px 0;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+
+        .status-healthy {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-unhealthy {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-unknown {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .metric-card h5 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .metric-unit {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        /* 暗色主题适配 */
+        .dark-theme .model-platform-section,
+        .dark-theme .model-type-section,
+        .dark-theme .model-status-section {
+            background: #2d3748;
+            border-color: #4a5568;
+        }
+
+        .dark-theme .model-platform-section h3,
+        .dark-theme .model-type-section h3,
+        .dark-theme .model-status-section h3 {
+            color: #e2e8f0;
+        }
+
+        .dark-theme .btn-refresh {
+            background: #4a5568;
+            color: #e2e8f0;
+        }
+
+        .dark-theme .btn-refresh:hover {
+            background: #2d3748;
+        }
+
+        .dark-theme .status-display {
+            background: #1a202c;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+
+        .dark-theme .model-status-item {
+            background: #2d3748;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+
+        .dark-theme .metric-card {
+            background: #2d3748;
+            border-color: #4a5568;
+        }
+
+        .dark-theme .metric-card h5 {
+            color: #e2e8f0;
+        }
+
+        .dark-theme .metric-value {
+            color: #63b3ed;
+        }
+
+        .dark-theme .metric-unit {
+            color: #a0aec0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .model-actions {
+                flex-direction: column;
+            }
+
+            .model-selector {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <!-- JavaScript -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/document-manager.js"></script>
+    <script src="js/qa.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

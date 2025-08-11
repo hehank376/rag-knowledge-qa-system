@@ -1,0 +1,84 @@
+# 混合提供商配置示例
+# 展示如何为 LLM 和嵌入模型使用不同的提供商
+
+# 场景1：使用 OpenAI 的 LLM + SiliconFlow 的中文嵌入模型
+llm:
+  provider: "openai"
+  model: "gpt-4"
+  api_key: "${OPENAI_API_KEY}"
+  temperature: 0.7
+  max_tokens: 2000
+  timeout: 60
+  retry_attempts: 3
+
+embeddings:
+  provider: "siliconflow"  # 使用不同的提供商
+  model: "BAAI/bge-large-zh-v1.5"  # 中文优化的嵌入模型
+  api_key: "${SILICONFLOW_API_KEY}"
+  base_url: "https://api.siliconflow.cn/v1"
+  dimensions: 1024
+  batch_size: 100
+  timeout: 60
+
+# 场景2：使用本地 Ollama LLM + 云端嵌入服务
+# llm:
+#   provider: "ollama"
+#   model: "llama3"
+#   base_url: "http://localhost:11434"
+#   temperature: 0.7
+#   max_tokens: 2000
+#   timeout: 120
+
+# embeddings:
+#   provider: "openai"  # 使用云端嵌入服务
+#   model: "text-embedding-ada-002"
+#   api_key: "${OPENAI_API_KEY}"
+#   dimensions: 1536
+#   batch_size: 100
+#   timeout: 60
+
+# 场景3：使用 DeepSeek LLM + Azure 嵌入模型
+# llm:
+#   provider: "deepseek"
+#   model: "deepseek-chat"
+#   api_key: "${DEEPSEEK_API_KEY}"
+#   base_url: "https://api.deepseek.com/v1"
+#   temperature: 0.7
+#   max_tokens: 2000
+#   timeout: 60
+
+# embeddings:
+#   provider: "azure"
+#   model: "text-embedding-ada-002"  # Azure 部署名称
+#   api_key: "${AZURE_OPENAI_API_KEY}"
+#   base_url: "https://your-resource.openai.azure.com/"
+#   api_version: "2023-12-01-preview"
+#   dimensions: 1536
+#   batch_size: 100
+#   timeout: 60
+
+# 混合配置的优势：
+# 1. 成本优化：选择性价比最高的组合
+# 2. 性能优化：为不同任务选择最适合的模型
+# 3. 语言优化：LLM 用英文模型，嵌入用中文优化模型
+# 4. 可用性：降低单一提供商的依赖风险
+# 5. 合规性：根据数据敏感度选择不同的提供商
+
+# 常见混合配置策略：
+# 1. 高质量 LLM + 经济型嵌入：OpenAI GPT-4 + SiliconFlow 嵌入
+# 2. 本地 LLM + 云端嵌入：Ollama + OpenAI 嵌入
+# 3. 专业 LLM + 通用嵌入：DeepSeek Coder + OpenAI 嵌入
+# 4. 多语言优化：英文 LLM + 中文嵌入模型
+
+# 注意事项：
+# 1. 确保嵌入模型的维度与向量数据库配置匹配
+# 2. 不同提供商的 API 限制和定价策略不同
+# 3. 监控各个提供商的可用性和性能
+# 4. 考虑数据传输和延迟的影响
+# 5. 确保所有必要的 API 密钥都已正确配置
+
+# 环境变量设置示例：
+# export OPENAI_API_KEY="sk-your-openai-key"
+# export SILICONFLOW_API_KEY="your-siliconflow-key"
+# export DEEPSEEK_API_KEY="your-deepseek-key"
+# export AZURE_OPENAI_API_KEY="your-azure-key"

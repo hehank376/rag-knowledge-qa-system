@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API客户端调试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>API客户端调试页面</h1>
+    
+    <div class="debug-section">
+        <h2>调试控制</h2>
+        <button class="btn" onclick="checkAPIClient()">检查API客户端</button>
+        <button class="btn" onclick="testDocumentStats()">测试统计API</button>
+        <button class="btn" onclick="clearLog()">清空日志</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>调试日志</h2>
+        <div class="log" id="debugLog"></div>
+    </div>
+
+    <!-- 按照前端页面的顺序加载JavaScript文件 -->
+    <script src="/frontend/js/utils.js"></script>
+    <script src="/frontend/js/api.js"></script>
+    <script src="/frontend/js/theme.js"></script>
+    <script src="/frontend/js/notifications.js"></script>
+    
+    <script>
+        function log(message) {
+            const logElement = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('debugLog').textContent = '';
+        }
+
+        function checkAPIClient() {
+            log('🔍 检查API客户端...');
+            
+            // 检查全局变量
+            log('检查全局变量:');
+            log(`- typeof apiClient: ${typeof apiClient}`);
+            log(`- typeof documentAPI: ${typeof documentAPI}`);
+            log(`- typeof api: ${typeof api}`);
+            
+            if (typeof apiClient !== 'undefined') {
+                log('\\n📋 apiClient 可用方法:');
+                const methods = Object.keys(apiClient);
+                methods.forEach(method => {
+                    log(`  - ${method}: ${typeof apiClient[method]}`);
+                });
+                
+                // 特别检查getDocumentStats
+                if (apiClient.getDocumentStats) {
+                    log('\\n✅ getDocumentStats 方法存在');
+                    log(`   类型: ${typeof apiClient.getDocumentStats}`);
+                } else {
+                    log('\\n❌ getDocumentStats 方法不存在');
+                }
+            } else {
+                log('❌ apiClient 未定义');
+            }
+            
+            if (typeof documentAPI !== 'undefined') {
+                log('\\n📋 documentAPI 可用方法:');
+                const methods = Object.keys(documentAPI);
+                methods.forEach(method => {
+                    log(`  - ${method}: ${typeof documentAPI[method]}`);
+                });
+            } else {
+                log('❌ documentAPI 未定义');
+            }
+        }
+
+        async function testDocumentStats() {
+            log('🧪 测试统计API...');
+            
+            try {
+                if (typeof apiClient === 'undefined') {
+                    log('❌ apiClient 未定义');
+                    return;
+                }
+                
+                if (!apiClient.getDocumentStats) {
+                    log('❌ getDocumentStats 方法不存在');
+                    return;
+                }
+                
+                log('调用 apiClient.getDocumentStats()...');
+                const stats = await apiClient.getDocumentStats();
+                
+                log('✅ 统计API调用成功');
+                log('统计数据: ' + JSON.stringify(stats, null, 2));
+                
+            } catch (error) {
+                log('❌ 统计API调用失败: ' + error.message);
+                console.error('详细错误:', error);
+            }
+        }
+
+        // 页面加载完成后自动检查
+        window.addEventListener('load', () => {
+            log('页面加载完成');
+            setTimeout(() => {
+                checkAPIClient();
+            }, 100);
+        });
+        
+        // 监听脚本加载事件
+        document.addEventListener('DOMContentLoaded', () => {
+            log('DOM内容加载完成');
+        });
+    </script>
+</body>
+</html>

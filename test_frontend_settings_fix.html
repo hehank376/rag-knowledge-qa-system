@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端设置功能测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .test-result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        input, select { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; }
+        .form-group { margin: 10px 0; }
+        label { display: inline-block; width: 120px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🧪 前端设置功能测试</h1>
+    
+    <div class="test-section">
+        <h2>1. 模拟设置表单</h2>
+        <div class="form-group">
+            <label>系统名称:</label>
+            <input type="text" id="systemName" value="RAG Knowledge QA System (Dev)">
+        </div>
+        <div class="form-group">
+            <label>LLM提供商:</label>
+            <select id="llmProvider">
+                <option value="siliconflow">SiliconFlow</option>
+                <option value="openai">OpenAI</option>
+                <option value="deepseek">DeepSeek</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>LLM模型:</label>
+            <input type="text" id="llmModel" value="Qwen/Qwen2-7B-Instruct">
+        </div>
+        <div class="form-group">
+            <label>温度:</label>
+            <input type="number" id="llmTemperature" value="0.7" step="0.1" min="0" max="2">
+        </div>
+        <div class="form-group">
+            <label>最大令牌:</label>
+            <input type="number" id="llmMaxTokens" value="2000" min="100" max="4000">
+        </div>
+        <div class="form-group">
+            <label>嵌入提供商:</label>
+            <select id="embeddingProvider">
+                <option value="siliconflow">SiliconFlow</option>
+                <option value="openai">OpenAI</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>嵌入模型:</label>
+            <input type="text" id="embeddingModel" value="BAAI/bge-large-zh-v1.5">
+        </div>
+        <div class="form-group">
+            <label>块大小:</label>
+            <input type="number" id="chunkSize" value="400" min="100" max="2000">
+        </div>
+        <div class="form-group">
+            <label>块重叠:</label>
+            <input type="number" id="chunkOverlap" value="50" min="0" max="500">
+        </div>
+        
+        <button onclick="testSettingsSave()">测试设置保存</button>
+        <button onclick="testSettingsLoad()">测试设置加载</button>
+        <div id="settingsTestResult" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 错误处理测试</h2>
+        <button onclick="testInvalidSettings()">测试无效设置</button>
+        <button onclick="testNetworkError()">测试网络错误</button>
+        <div id="errorTestResult" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. 监控功能测试</h2>
+        <button onclick="testMonitoring()">测试监控API</button>
+        <div id="monitoringTestResult" class="test-result"></div>
+    </div>
+
+    <script>
+        // 模拟通知管理器
+        const notificationManager = {
+            show: function(message, type) {
+                console.log(`[${type.toUpperCase()}] ${message}`);
+                const resultDiv = document.getElementById('settingsTestResult');
+                const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+                resultDiv.innerHTML += `<p class="${className}">[${type.toUpperCase()}] ${message}</p>`;
+            }
+        };
+
+        // 简化的API客户端
+        class TestAPIClient {
+            constructor(baseURL = 'http://localhost:8000') {
+                this.baseURL = baseURL;
+            }
+
+            async request(url, options = {}) {
+                const config = {
+                    headers: { 'Content-Type': 'application/json' },
+                    ...options
+                };
+
+                try {
+                    const response = await fetch(`${this.baseURL}${url}`, config);
+
+                    if (!response.ok) {
+                        let errorData;
+                        try {
+                            errorData = await response.json();
+                        } catch {
+                            errorData = { detail: response.statusText };
+                        }
+                        const errorMessage = errorData.detail || `HTTP ${response.status}: ${response.statusText}`;
+                        throw new Error(errorMessage);
+                    }
+
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return await response.json();
+                    }
+                    return await response.text();
+
+                } catch (error) {
+                    console.error('API请求失败:', error);
+                    const errorMessage = error.message || error.toString() || '未知错误';
+                    throw new Error(errorMessage);
+                }
+            }
+
+            async getConfig() {
+                const response = await this.request('/config/', { method: 'GET' });
+                return response.config || response;
+            }
+
+            async validateConfig(section, config) {
+                return await this.request('/config/validate', {
+                    method: 'POST',
+                    body: JSON.stringify({ section, config })
+                });
+            }
+
+            async updateConfigSection(section, config) {
+                return await this.request(`/config/${section}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(config)
+                });
+            }
+
+            async getHealth() {
+                try {
+                    return await this.request('/config/health', { method: 'GET' });
+                } catch (error) {
+                    return { status: 'unknown', message: 'Health check failed' };
+                }
+            }
+        }
+
+        const apiClient = new TestAPIClient();
+
+        // 收集表单数据
+        function collectFormData() {
+            return {
+                app: {
+                    name: document.getElementById('systemName').value,
+                    debug: true
+                },
+                llm: {
+                    provider: document.getElementById('llmProvider').value,
+                    model: document.getElementById('llmModel').value,
+                    temperature: parseFloat(document.getElementById('llmTemperature').value),
+                    max_tokens: parseInt(document.getElementById('llmMaxTokens').value)
+                },
+                embeddings: {
+                    provider: document.getElementById('embeddingProvider').value,
+                    model: document.getElementById('embeddingModel').value,
+                    chunk_size: parseInt(document.getElementById('chunkSize').value),
+                    chunk_overlap: parseInt(document.getElementById('chunkOverlap').value)
+                }
+            };
+        }
+
+        // 测试设置保存
+        async function testSettingsSave() {
+            const resultDiv = document.getElementById('settingsTestResult');
+            resultDiv.innerHTML = '<p class="info">测试设置保存中...</p>';
+
+            try {
+                const settings = collectFormData();
+                console.log('收集的设置数据:', settings);
+
+                // 验证配置
+                const validationResult = await apiClient.validateConfig('all', settings);
+                if (!validationResult.valid) {
+                    const errorMessages = [];
+                    if (validationResult.errors) {
+                        for (const [field, error] of Object.entries(validationResult.errors)) {
+                            errorMessages.push(`${field}: ${error}`);
+                        }
+                    }
+                    const errorText = errorMessages.length > 0 ? errorMessages.join('; ') : '配置验证失败';
+                    throw new Error(errorText);
+                }
+
+                // 保存配置
+                const saveResult = await apiClient.updateConfigSection('all', settings);
+                
+                notificationManager.show('设置保存成功', 'success');
+                resultDiv.innerHTML += `<p class="success">✅ 保存成功: ${saveResult.message}</p>`;
+
+            } catch (error) {
+                console.error('Failed to save settings:', error);
+                const errorMessage = error.message || error.toString() || '保存设置失败';
+                notificationManager.show('保存设置失败: ' + errorMessage, 'error');
+                resultDiv.innerHTML += `<p class="error">❌ 保存失败: ${errorMessage}</p>`;
+            }
+        }
+
+        // 测试设置加载
+        async function testSettingsLoad() {
+            const resultDiv = document.getElementById('settingsTestResult');
+            resultDiv.innerHTML += '<p class="info">测试设置加载中...</p>';
+
+            try {
+                const response = await apiClient.getConfig();
+                console.log('API响应:', response);
+                
+                const settings = response.config || response;
+                console.log('解析后的设置:', settings);
+
+                // 填充表单
+                if (settings.app?.name) {
+                    document.getElementById('systemName').value = settings.app.name;
+                }
+                if (settings.llm?.provider) {
+                    document.getElementById('llmProvider').value = settings.llm.provider;
+                }
+                if (settings.llm?.model) {
+                    document.getElementById('llmModel').value = settings.llm.model;
+                }
+                if (settings.llm?.temperature !== undefined) {
+                    document.getElementById('llmTemperature').value = settings.llm.temperature;
+                }
+                if (settings.llm?.max_tokens) {
+                    document.getElementById('llmMaxTokens').value = settings.llm.max_tokens;
+                }
+
+                resultDiv.innerHTML += '<p class="success">✅ 设置加载成功，表单已更新</p>';
+
+            } catch (error) {
+                console.error('Failed to load settings:', error);
+                const errorMessage = error.message || error.toString() || '加载设置失败';
+                resultDiv.innerHTML += `<p class="error">❌ 加载失败: ${errorMessage}</p>`;
+            }
+        }
+
+        // 测试无效设置
+        async function testInvalidSettings() {
+            const resultDiv = document.getElementById('errorTestResult');
+            resultDiv.innerHTML = '<p class="info">测试无效设置处理...</p>';
+
+            const invalidSettings = {
+                llm: {
+                    provider: "invalid_provider",
+                    model: "",
+                    temperature: 5.0,
+                    max_tokens: -100
+                }
+            };
+
+            try {
+                const validationResult = await apiClient.validateConfig('llm', invalidSettings.llm);
+                
+                if (!validationResult.valid) {
+                    resultDiv.innerHTML += '<p class="success">✅ 错误处理正常，检测到以下问题:</p>';
+                    if (validationResult.errors) {
+                        for (const [field, error] of Object.entries(validationResult.errors)) {
+                            resultDiv.innerHTML += `<p class="info">  - ${field}: ${error}</p>`;
+                        }
+                    }
+                } else {
+                    resultDiv.innerHTML += '<p class="error">❌ 错误处理失败，应该检测到配置错误</p>';
+                }
+
+            } catch (error) {
+                resultDiv.innerHTML += `<p class="error">❌ 测试异常: ${error.message}</p>`;
+            }
+        }
+
+        // 测试网络错误
+        async function testNetworkError() {
+            const resultDiv = document.getElementById('errorTestResult');
+            resultDiv.innerHTML += '<p class="info">测试网络错误处理...</p>';
+
+            try {
+                // 尝试访问不存在的端点
+                await apiClient.request('/nonexistent-endpoint');
+                resultDiv.innerHTML += '<p class="error">❌ 应该产生网络错误</p>';
+            } catch (error) {
+                resultDiv.innerHTML += `<p class="success">✅ 网络错误处理正常: ${error.message}</p>`;
+            }
+        }
+
+        // 测试监控功能
+        async function testMonitoring() {
+            const resultDiv = document.getElementById('monitoringTestResult');
+            resultDiv.innerHTML = '<p class="info">测试监控功能...</p>';
+
+            try {
+                const health = await apiClient.getHealth();
+                resultDiv.innerHTML += `<p class="success">✅ 健康检查成功: ${JSON.stringify(health)}</p>`;
+            } catch (error) {
+                resultDiv.innerHTML += `<p class="error">❌ 健康检查失败: ${error.message}</p>`;
+            }
+        }
+
+        // 页面加载时自动加载设置
+        window.onload = function() {
+            console.log('🧪 前端设置功能测试页面已加载');
+            testSettingsLoad();
+        };
+    </script>
+</body>
+</html>

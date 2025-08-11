@@ -1,0 +1,161 @@
+{
+  "overall_status": "unhealthy",
+  "last_check": "2025-08-03T10:20:42.309626",
+  "total_models": 5,
+  "healthy_models": 0,
+  "unhealthy_models": 5,
+  "models": {
+    "mock:llm:healthy-llm": {
+      "provider": "mock",
+      "model_name": "healthy-llm",
+      "model_type": "llm",
+      "is_healthy": false,
+      "response_time": null,
+      "success_rate": 0.0,
+      "consecutive_failures": 6,
+      "total_checks": 6,
+      "last_check": "2025-08-03T10:20:42.089242",
+      "error_message": "LLM健康检查失败: 'str' object has no attribute 'get'"
+    },
+    "mock:llm:unhealthy-llm": {
+      "provider": "mock",
+      "model_name": "unhealthy-llm",
+      "model_type": "llm",
+      "is_healthy": false,
+      "response_time": null,
+      "success_rate": 0.0,
+      "consecutive_failures": 6,
+      "total_checks": 6,
+      "last_check": "2025-08-03T10:20:42.198357",
+      "error_message": "LLM健康检查失败: 'str' object has no attribute 'get'"
+    },
+    "mock:llm:slow-llm": {
+      "provider": "mock",
+      "model_name": "slow-llm",
+      "model_type": "llm",
+      "is_healthy": false,
+      "response_time": null,
+      "success_rate": 0.0,
+      "consecutive_failures": 6,
+      "total_checks": 6,
+      "last_check": "2025-08-03T10:20:42.309626",
+      "error_message": "LLM健康检查失败: 'str' object has no attribute 'get'"
+    },
+    "mock:embedding:healthy-embedding": {
+      "provider": "mock",
+      "model_name": "healthy-embedding",
+      "model_type": "embedding",
+      "is_healthy": false,
+      "response_time": null,
+      "success_rate": 0.0,
+      "consecutive_failures": 6,
+      "total_checks": 6,
+      "last_check": "2025-08-03T10:20:42.309626",
+      "error_message": "嵌入模型健康检查失败: [UNKNOWN_ERROR] 嵌入模型未初始化"
+    },
+    "mock:embedding:unhealthy-embedding": {
+      "provider": "mock",
+      "model_name": "unhealthy-embedding",
+      "model_type": "embedding",
+      "is_healthy": false,
+      "response_time": null,
+      "success_rate": 0.0,
+      "consecutive_failures": 6,
+      "total_checks": 6,
+      "last_check": "2025-08-03T10:20:42.309626",
+      "error_message": "嵌入模型健康检查失败: [UNKNOWN_ERROR] 嵌入模型未初始化"
+    }
+  },
+  "providers": {
+    "mock": {
+      "total": 5,
+      "healthy": 0,
+      "unhealthy": 5,
+      "avg_response_time": 0,
+      "models": [
+        {
+          "name": "healthy-llm",
+          "type": "llm",
+          "healthy": false,
+          "response_time": null,
+          "success_rate": 0.0,
+          "consecutive_failures": 6,
+          "last_check": "2025-08-03T10:20:42.089242",
+          "error": "LLM健康检查失败: 'str' object has no attribute 'get'"
+        },
+        {
+          "name": "unhealthy-llm",
+          "type": "llm",
+          "healthy": false,
+          "response_time": null,
+          "success_rate": 0.0,
+          "consecutive_failures": 6,
+          "last_check": "2025-08-03T10:20:42.198357",
+          "error": "LLM健康检查失败: 'str' object has no attribute 'get'"
+        },
+        {
+          "name": "slow-llm",
+          "type": "llm",
+          "healthy": false,
+          "response_time": null,
+          "success_rate": 0.0,
+          "consecutive_failures": 6,
+          "last_check": "2025-08-03T10:20:42.309626",
+          "error": "LLM健康检查失败: 'str' object has no attribute 'get'"
+        },
+        {
+          "name": "healthy-embedding",
+          "type": "embedding",
+          "healthy": false,
+          "response_time": null,
+          "success_rate": 0.0,
+          "consecutive_failures": 6,
+          "last_check": "2025-08-03T10:20:42.309626",
+          "error": "嵌入模型健康检查失败: [UNKNOWN_ERROR] 嵌入模型未初始化"
+        },
+        {
+          "name": "unhealthy-embedding",
+          "type": "embedding",
+          "healthy": false,
+          "response_time": null,
+          "success_rate": 0.0,
+          "consecutive_failures": 6,
+          "last_check": "2025-08-03T10:20:42.309626",
+          "error": "嵌入模型健康检查失败: [UNKNOWN_ERROR] 嵌入模型未初始化"
+        }
+      ]
+    }
+  },
+  "alerts": [
+    {
+      "level": "error",
+      "message": "模型 mock/healthy-llm (llm) 不健康",
+      "details": "LLM健康检查失败: 'str' object has no attribute 'get'",
+      "consecutive_failures": 6
+    },
+    {
+      "level": "error",
+      "message": "模型 mock/unhealthy-llm (llm) 不健康",
+      "details": "LLM健康检查失败: 'str' object has no attribute 'get'",
+      "consecutive_failures": 6
+    },
+    {
+      "level": "error",
+      "message": "模型 mock/slow-llm (llm) 不健康",
+      "details": "LLM健康检查失败: 'str' object has no attribute 'get'",
+      "consecutive_failures": 6
+    },
+    {
+      "level": "error",
+      "message": "模型 mock/healthy-embedding (embedding) 不健康",
+      "details": "嵌入模型健康检查失败: [UNKNOWN_ERROR] 嵌入模型未初始化",
+      "consecutive_failures": 6
+    },
+    {
+      "level": "error",
+      "message": "模型 mock/unhealthy-embedding (embedding) 不健康",
+      "details": "嵌入模型健康检查失败: [UNKNOWN_ERROR] 嵌入模型未初始化",
+      "consecutive_failures": 6
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统一API调用测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .result-area {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .success {
+            color: #28a745;
+        }
+        
+        .error {
+            color: #dc3545;
+        }
+        
+        .info {
+            color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 统一API调用测试</h1>
+            <p>测试前端使用统一apiClient进行模型管理API调用</p>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 模型状态管理</h3>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testGetModelStatus()">获取模型状态</button>
+                <button class="btn btn-primary" onclick="testGetModelMetrics()">获取模型指标</button>
+                <button class="btn btn-secondary" onclick="testHealthCheck()">健康检查</button>
+            </div>
+            <div id="statusResult" class="result-area">点击按钮测试API调用...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 模型操作管理</h3>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testSwitchModel()">切换模型</button>
+                <button class="btn btn-primary" onclick="testAddModel()">添加模型</button>
+                <button class="btn btn-secondary" onclick="testModelTest()">测试模型</button>
+            </div>
+            <div id="operationResult" class="result-area">点击按钮测试API调用...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>⚙️ 配置管理</h3>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testGetConfig()">获取配置</button>
+                <button class="btn btn-primary" onclick="testUpdateConfig()">更新配置</button>
+                <button class="btn btn-secondary" onclick="testValidateConfig()">验证配置</button>
+            </div>
+            <div id="configResult" class="result-area">点击按钮测试API调用...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>📈 API调用统计</h3>
+            <div id="statsResult" class="result-area">
+成功调用: <span id="successCount">0</span>
+失败调用: <span id="errorCount">0</span>
+总调用数: <span id="totalCount">0</span>
+成功率: <span id="successRate">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入API客户端 -->
+    <script src="js/api.js"></script>
+    
+    <script>
+        // 统计变量
+        let successCount = 0;
+        let errorCount = 0;
+        let totalCount = 0;
+
+        function updateStats() {
+            totalCount = successCount + errorCount;
+            const successRate = totalCount > 0 ? ((successCount / totalCount) * 100).toFixed(1) : 0;
+            
+            document.getElementById('successCount').textContent = successCount;
+            document.getElementById('errorCount').textContent = errorCount;
+            document.getElementById('totalCount').textContent = totalCount;
+            document.getElementById('successRate').textContent = successRate + '%';
+        }
+
+        function logResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            
+            element.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            element.scrollTop = element.scrollHeight;
+            
+            if (type === 'success') {
+                successCount++;
+            } else if (type === 'error') {
+                errorCount++;
+            }
+            updateStats();
+        }
+
+        // 模型状态测试
+        async function testGetModelStatus() {
+            try {
+                logResult('statusResult', '正在获取模型状态...', 'info');
+                const result = await apiClient.getModelStatus();
+                logResult('statusResult', `模型状态获取成功: ${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                logResult('statusResult', `模型状态获取失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testGetModelMetrics() {
+            try {
+                logResult('statusResult', '正在获取模型指标...', 'info');
+                const result = await apiClient.getModelMetrics();
+                logResult('statusResult', `模型指标获取成功: ${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                logResult('statusResult', `模型指标获取失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testHealthCheck() {
+            try {
+                logResult('statusResult', '正在执行健康检查...', 'info');
+                const result = await apiClient.performModelHealthCheck();
+                logResult('statusResult', `健康检查完成: ${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                logResult('statusResult', `健康检查失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 模型操作测试
+        async function testSwitchModel() {
+            try {
+                logResult('operationResult', '正在切换模型...', 'info');
+                const result = await apiClient.switchActiveModel('embedding', 'test-model');
+                logResult('operationResult', `模型切换成功: ${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                logResult('operationResult', `模型切换失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAddModel() {
+            try {
+                logResult('operationResult', '正在添加模型...', 'info');
+                const config = {
+                    name: 'test_model_' + Date.now(),
+                    provider: 'mock',
+                    model_name: 'test-model-v1',
+                    config: {
+                        batch_size: 32,
+                        api_key: 'test_key'
+                    },
+                    enabled: true,
+                    priority: 5
+                };
+                const result = await apiClient.addModel('embedding', config);
+                logResult('operationResult', `模型添加成功: ${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                logResult('operationResult', `模型添加失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testModelTest() {
+            try {
+                logResult('operationResult', '正在测试模型...', 'info');
+                const result = await apiClient.testModel('embedding', 'test-model');
+                logResult('operationResult', `模型测试完成: ${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                logResult('operationResult', `模型测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 配置管理测试
+        async function testGetConfig() {
+            try {
+                logResult('configResult', '正在获取配置...', 'info');
+                const result = await apiClient.getConfig();
+                logResult('configResult', `配置获取成功: ${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                logResult('configResult', `配置获取失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testUpdateConfig() {
+            try {
+                logResult('configResult', '正在更新配置...', 'info');
+                const configData = {
+                    embeddings: {
+                        provider: 'mock',
+                        model: 'test-embedding-updated',
+                        batch_size: 64
+                    }
+                };
+                const result = await apiClient.updateModelConfig(configData);
+                logResult('configResult', `配置更新成功: ${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                logResult('configResult', `配置更新失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testValidateConfig() {
+            try {
+                logResult('configResult', '正在验证配置...', 'info');
+                const config = {
+                    provider: 'mock',
+                    model: 'test-model',
+                    chunk_size: 1000
+                };
+                const result = await apiClient.validateConfig('embeddings', config);
+                logResult('configResult', `配置验证完成: ${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                logResult('configResult', `配置验证失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载时的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            logResult('statusResult', '页面加载完成，API客户端已初始化', 'info');
+            logResult('operationResult', '准备测试模型操作API', 'info');
+            logResult('configResult', '准备测试配置管理API', 'info');
+            
+            // 检查apiClient是否可用
+            if (typeof apiClient !== 'undefined') {
+                logResult('statusResult', 'apiClient已成功加载', 'success');
+            } else {
+                logResult('statusResult', 'apiClient加载失败', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

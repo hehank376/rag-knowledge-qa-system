@@ -1,0 +1,69 @@
+# Azure OpenAI 配置示例
+# 适用于企业级部署，需要合规性和数据主权的场景
+
+llm:
+  provider: "azure"
+  model: "gpt-4"  # 这里是部署名称，不是模型名称
+  api_key: "${AZURE_OPENAI_API_KEY}"  # 从环境变量读取
+  base_url: "https://your-resource.openai.azure.com/"  # 替换为你的 Azure 端点
+  api_version: "2023-12-01-preview"  # API 版本
+  temperature: 0.7  # 控制输出的随机性
+  max_tokens: 2000  # 最大生成令牌数
+  timeout: 60  # 请求超时时间（秒）
+  retry_attempts: 3  # 失败重试次数
+  top_p: 1.0  # 核采样参数
+  frequency_penalty: 0.0  # 频率惩罚
+  presence_penalty: 0.0  # 存在惩罚
+
+embeddings:
+  provider: "azure"
+  model: "text-embedding-ada-002"  # 这里是部署名称
+  api_key: "${AZURE_OPENAI_API_KEY}"  # 从环境变量读取
+  base_url: "https://your-resource.openai.azure.com/"  # 替换为你的 Azure 端点
+  api_version: "2023-12-01-preview"  # API 版本
+  dimensions: 1536  # text-embedding-ada-002 的维度
+  batch_size: 100  # 批处理大小
+  timeout: 60  # 请求超时时间（秒）
+  max_concurrent_requests: 5  # 最大并发请求数
+
+# Azure OpenAI 配置说明：
+# 1. model 字段应该填写你在 Azure 中创建的部署名称，而不是 OpenAI 的模型名称
+# 2. base_url 需要替换为你的 Azure OpenAI 资源端点
+# 3. api_version 需要根据你使用的 API 版本进行调整
+
+# 环境变量设置：
+# export AZURE_OPENAI_API_KEY="your-azure-api-key"
+
+# 常用的 API 版本：
+# - 2023-12-01-preview: 最新预览版本
+# - 2023-05-15: 稳定版本
+# - 2023-06-01-preview: 包含函数调用功能
+
+# 部署名称示例：
+# 如果你在 Azure 中创建了以下部署：
+# - GPT-4 部署名称：my-gpt4-deployment
+# - 嵌入模型部署名称：my-embedding-deployment
+# 那么配置应该是：
+# llm:
+#   model: "my-gpt4-deployment"
+# embeddings:
+#   model: "my-embedding-deployment"
+
+# Azure OpenAI 的优势：
+# - 企业级安全和合规性
+# - 数据驻留在指定区域
+# - 与 Azure 生态系统集成
+# - SLA 保证和技术支持
+# - 内容过滤和安全功能
+
+# 注意事项：
+# - 需要先在 Azure 门户中创建 OpenAI 资源
+# - 需要申请访问权限（可能需要等待审批）
+# - 成本可能比直接使用 OpenAI API 更高
+# - 模型可用性可能因区域而异
+
+# 区域选择建议：
+# - East US: 通常有最新的模型和功能
+# - West Europe: 适合欧洲用户
+# - Southeast Asia: 适合亚洲用户
+# 选择离用户最近的区域以获得最佳性能

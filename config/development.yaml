@@ -1,0 +1,138 @@
+api:
+  cors_origins:
+  - http://localhost
+  - http://localhost:3000
+  - http://localhost:8080
+  - http://127.0.0.1:3000
+  host: 0.0.0.0
+  max_request_size: 104857600
+  port: 8000
+  reload: true
+  timeout: 600
+  workers: 1
+app:
+  debug: true
+  environment: development
+  log_level: DEBUG
+  name: RAG Knowledge QA System (Dev)
+  secret_key: dev-secret-key-change-in-production
+  version: 1.0.0-dev
+backup:
+  compression: false
+  enabled: false
+  encryption: false
+  retention_days: 7
+  schedule: 0 */6 * * *
+cache:
+  cleanup_interval: 60
+  default_ttl: 300
+  enabled: true
+  max_size: 100
+database:
+  echo: true
+  url: sqlite:///./database/rag_system.db
+development:
+  auto_reload: true
+  debug_toolbar: true
+  mock_external_services: true
+  profiling: true
+  test_data_generation: true
+document_processing:
+  allowed_extensions:
+  - pdf
+  - docx
+  - txt
+  - md
+  chunk_overlap: 50
+  chunk_size: 400
+  max_chunks_per_document: 100
+  max_file_size: 52428800
+  min_chunk_size: 50
+  processing_timeout: 120
+embeddings:
+  api_key: ''
+  base_url: https://api.siliconflow.cn/v1
+  batch_size: 50
+  chunk_overlap: 100
+  chunk_size: 1000
+  dimensions: 1024
+  model: BAAI/bge-large-zh-v1.5
+  provider: siliconflow
+  retry_attempts: 3
+  timeout: 120
+llm:
+  api_key: test-key-save-fix
+  base_url: ''
+  max_tokens: 1024
+  model: Qwen/Qwen3-8B
+  provider: siliconflow
+  retry_attempts: 3
+  temperature: 0.6
+  timeout: 180
+logging:
+  backup_count: 3
+  file_rotation: true
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s'
+  handlers:
+  - type: console
+  - filename: ./logs/app.log
+    type: file
+  - filename: ./logs/error.log
+    level: ERROR
+    type: file
+  level: DEBUG
+  max_file_size: 5242880
+monitoring:
+  enabled: true
+  error_tracking: true
+  health_check_interval: 10
+  metrics_port: 9090
+  performance_tracking: true
+performance:
+  connection_pool_size: 5
+  keep_alive_timeout: 2
+  max_concurrent_requests: 50
+  request_timeout: 30
+  worker_timeout: 120
+redis:
+  max_connections: 10
+  retry_on_timeout: true
+  socket_connect_timeout: 5
+  socket_timeout: 5
+  url: redis://localhost:6380/0
+reranking:
+  api_key: ''
+  base_url: https://api.siliconflow.cn/v1
+  batch_size: 30
+  max_length: 512
+  model: BAAI/bge-reranker-v2-m3
+  model_name: BAAI/bge-reranker-v2-m3
+  provider: siliconflow
+  timeout: 60
+retrieval:
+  enable_cache: false
+  enable_rerank: true
+  search_mode: semantic
+  similarity_threshold: 0.25
+  top_k: 15
+security:
+  authentication:
+    enabled: false
+    jwt_secret: dev-jwt-secret
+    token_expiry: 86400
+  encryption:
+    enabled: false
+  rate_limiting:
+    burst_size: 100
+    enabled: false
+    requests_per_minute: 1000
+storage:
+  cleanup_interval: 3600
+  data_dir: ./data
+  log_dir: ./logs
+  max_storage_size: 1073741824
+  upload_dir: ./uploads
+vector_store:
+  collection_name: documents
+  persist_directory: ./chroma_db
+  type: chroma

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端模型管理功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        
+        .feature-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .status-icon {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+        }
+        
+        .implemented {
+            color: #28a745;
+        }
+        
+        .pending {
+            color: #ffc107;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .usage-example {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .api-endpoint {
+            background: #f0f8f0;
+            border-left: 4px solid #28a745;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🤖 前端模型管理功能测试</h1>
+            <p>验证RAG系统前端模型管理和参数配置功能</p>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 功能概览</h3>
+            <p>本次更新在前端设置页面的"模型配置"部分添加了完整的模型管理功能，包括：</p>
+            <ul class="feature-list">
+                <li><span class="status-icon implemented">✅</span> 统一的模型平台配置（API密钥、基础URL等）</li>
+                <li><span class="status-icon implemented">✅</span> 嵌入模型管理（添加、切换、测试）</li>
+                <li><span class="status-icon implemented">✅</span> 重排序模型管理（添加、切换、测试）</li>
+                <li><span class="status-icon implemented">✅</span> 模型状态监控和健康检查</li>
+                <li><span class="status-icon implemented">✅</span> 响应式界面设计</li>
+                <li><span class="status-icon pending">⏳</span> 后端API集成（需要创建相应的API端点）</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🎨 界面设计特点</h3>
+            <ul>
+                <li><strong>统一配置：</strong> 将相同平台的模型配置集中管理，避免重复配置</li>
+                <li><strong>直观操作：</strong> 提供下拉选择、刷新按钮、测试功能等便捷操作</li>
+                <li><strong>状态显示：</strong> 实时显示模型状态（🟢健康、🔴错误、🟡加载中）</li>
+                <li><strong>响应式设计：</strong> 适配不同屏幕尺寸，移动端友好</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 主要功能组件</h3>
+            
+            <h4>1. 模型平台配置</h4>
+            <div class="code-block">
+&lt;div class="model-platform-section"&gt;
+    &lt;h3&gt;&lt;i class="fas fa-cloud"&gt;&lt;/i&gt; 模型平台配置&lt;/h3&gt;
+    &lt;!-- 提供商选择、API密钥、基础URL配置 --&gt;
+&lt;/div&gt;
+            </div>
+
+            <h4>2. 嵌入模型管理</h4>
+            <div class="code-block">
+&lt;div class="model-type-section"&gt;
+    &lt;h3&gt;&lt;i class="fas fa-vector-square"&gt;&lt;/i&gt; 嵌入模型配置&lt;/h3&gt;
+    &lt;!-- 活跃模型选择、模型参数配置、操作按钮 --&gt;
+&lt;/div&gt;
+            </div>
+
+            <h4>3. 重排序模型管理</h4>
+            <div class="code-block">
+&lt;div class="model-type-section"&gt;
+    &lt;h3&gt;&lt;i class="fas fa-sort-amount-down"&gt;&lt;/i&gt; 重排序模型配置&lt;/h3&gt;
+    &lt;!-- 重排序模型选择、批处理配置、超时设置 --&gt;
+&lt;/div&gt;
+            </div>
+
+            <h4>4. 状态监控面板</h4>
+            <div class="code-block">
+&lt;div class="model-status-section"&gt;
+    &lt;h3&gt;&lt;i class="fas fa-chart-line"&gt;&lt;/i&gt; 模型状态监控&lt;/h3&gt;
+    &lt;!-- 状态查看、性能指标、健康检查 --&gt;
+&lt;/div&gt;
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>⚡ JavaScript功能</h3>
+            
+            <h4>ModelManager类</h4>
+            <div class="usage-example">
+                <strong>主要功能：</strong>
+                <ul>
+                    <li>模型配置加载和刷新</li>
+                    <li>活跃模型切换</li>
+                    <li>新模型添加</li>
+                    <li>模型测试和健康检查</li>
+                    <li>状态监控和指标显示</li>
+                </ul>
+            </div>
+
+            <h4>全局函数</h4>
+            <div class="code-block">
+// 刷新模型列表
+refreshEmbeddingModels()
+refreshRerankingModels()
+
+// 添加新模型
+addEmbeddingModel()
+addRerankingModel()
+
+// 测试模型
+testEmbeddingModel()
+testRerankingModel()
+
+// 状态监控
+showModelStatus()
+showModelMetrics()
+performHealthCheck()
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔌 需要的API端点</h3>
+            <p>前端功能需要以下后端API支持：</p>
+            
+            <div class="api-endpoint">
+                <strong>GET</strong> /api/model-manager/status<br>
+                <small>获取模型状态和配置信息</small>
+            </div>
+            
+            <div class="api-endpoint">
+                <strong>GET</strong> /api/model-manager/metrics<br>
+                <small>获取模型性能指标</small>
+            </div>
+            
+            <div class="api-endpoint">
+                <strong>POST</strong> /api/model-manager/switch-active<br>
+                <small>切换活跃模型</small>
+            </div>
+            
+            <div class="api-endpoint">
+                <strong>POST</strong> /api/model-manager/add-model<br>
+                <small>添加新模型配置</small>
+            </div>
+            
+            <div class="api-endpoint">
+                <strong>POST</strong> /api/model-manager/test-model<br>
+                <small>测试指定模型</small>
+            </div>
+            
+            <div class="api-endpoint">
+                <strong>POST</strong> /api/model-manager/health-check<br>
+                <small>执行健康检查</small>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 测试步骤</h3>
+            <ol>
+                <li><strong>界面测试：</strong> 打开前端页面，导航到"系统设置" → "模型配置"</li>
+                <li><strong>配置测试：</strong> 尝试配置模型平台信息（提供商、API密钥等）</li>
+                <li><strong>模型管理：</strong> 测试添加嵌入模型和重排序模型</li>
+                <li><strong>状态监控：</strong> 查看模型状态和性能指标</li>
+                <li><strong>响应式测试：</strong> 在不同屏幕尺寸下测试界面适配</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 配置示例</h3>
+            
+            <h4>OpenAI配置示例</h4>
+            <div class="code-block">
+提供商: OpenAI
+API密钥: sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+基础URL: https://api.openai.com/v1
+
+嵌入模型: text-embedding-ada-002
+向量维度: 1536
+批处理大小: 100
+            </div>
+
+            <h4>SiliconFlow配置示例</h4>
+            <div class="code-block">
+提供商: SiliconFlow
+API密钥: sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+基础URL: https://api.siliconflow.cn/v1
+
+嵌入模型: BAAI/bge-large-zh-v1.5
+重排序模型: BAAI/bge-reranker-large
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>✨ 优势特点</h3>
+            <ul>
+                <li><strong>统一管理：</strong> 相同平台的模型共享配置，减少重复设置</li>
+                <li><strong>实时监控：</strong> 提供模型状态、性能指标的实时查看</li>
+                <li><strong>便捷操作：</strong> 一键添加、测试、切换模型</li>
+                <li><strong>用户友好：</strong> 直观的界面设计和状态提示</li>
+                <li><strong>扩展性强：</strong> 易于添加新的模型提供商和类型</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🚀 下一步计划</h3>
+            <ul>
+                <li>创建对应的后端API端点</li>
+                <li>集成模型管理器服务</li>
+                <li>添加模型性能监控</li>
+                <li>实现模型自动故障转移</li>
+                <li>添加模型使用统计和分析</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

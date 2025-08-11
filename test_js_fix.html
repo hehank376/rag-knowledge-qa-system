@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript错误修复测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .success {
+            background: #28a745;
+        }
+        .error {
+            background: #dc3545;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+        .error-message {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .success-message {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 JavaScript错误修复测试</h1>
+        <p>测试修复后的模型管理功能是否正常工作</p>
+
+        <h2>模拟模型配置表单</h2>
+        
+        <!-- 模型平台配置 -->
+        <div class="form-group">
+            <label for="modelProvider">模型提供商</label>
+            <select id="modelProvider">
+                <option value="openai">OpenAI</option>
+                <option value="siliconflow">SiliconFlow</option>
+                <option value="huggingface">Hugging Face</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="modelApiKey">API密钥</label>
+            <input type="password" id="modelApiKey" placeholder="输入API密钥">
+        </div>
+
+        <div class="form-group">
+            <label for="modelBaseUrl">API基础URL</label>
+            <input type="url" id="modelBaseUrl" placeholder="https://api.openai.com/v1">
+        </div>
+
+        <!-- 嵌入模型配置 -->
+        <h3>嵌入模型配置</h3>
+        
+        <div class="form-group">
+            <label for="embeddingModel">嵌入模型名称</label>
+            <input type="text" id="embeddingModel" placeholder="text-embedding-ada-002">
+        </div>
+
+        <div class="form-group">
+            <label for="embeddingDimension">向量维度</label>
+            <input type="number" id="embeddingDimension" value="1536" min="128" max="4096">
+        </div>
+
+        <div class="form-group">
+            <label for="embeddingBatchSize">批处理大小</label>
+            <input type="number" id="embeddingBatchSize" value="100" min="1" max="1000">
+        </div>
+
+        <div class="form-group">
+            <label for="chunkSize">文本块大小</label>
+            <input type="number" id="chunkSize" value="1000" min="100" max="2000">
+        </div>
+
+        <div class="form-group">
+            <label for="chunkOverlap">文本块重叠</label>
+            <input type="number" id="chunkOverlap" value="200" min="0" max="500">
+        </div>
+
+        <div class="form-group">
+            <label for="embeddingTimeout">超时时间 (秒)</label>
+            <input type="number" id="embeddingTimeout" value="30" min="5" max="300" step="0.1">
+        </div>
+
+        <!-- 重排序模型配置 -->
+        <h3>重排序模型配置</h3>
+        
+        <div class="form-group">
+            <label for="rerankingModel">重排序模型名称</label>
+            <input type="text" id="rerankingModel" placeholder="cross-encoder/ms-marco-MiniLM-L-6-v2">
+        </div>
+
+        <div class="form-group">
+            <label for="rerankingBatchSize">批处理大小</label>
+            <input type="number" id="rerankingBatchSize" value="32" min="1" max="256">
+        </div>
+
+        <div class="form-group">
+            <label for="rerankingMaxLength">最大文本长度</label>
+            <input type="number" id="rerankingMaxLength" value="512" min="128" max="2048">
+        </div>
+
+        <div class="form-group">
+            <label for="rerankingTimeout">超时时间 (秒)</label>
+            <input type="number" id="rerankingTimeout" value="30" min="5" max="300" step="0.1">
+        </div>
+
+        <!-- 测试按钮 -->
+        <div style="margin-top: 30px;">
+            <button onclick="testAddEmbeddingModel()">🧪 测试添加嵌入模型</button>
+            <button onclick="testAddRerankingModel()">🧪 测试添加重排序模型</button>
+            <button onclick="testElementsExist()" class="success">✅ 检查元素存在</button>
+        </div>
+
+        <div id="result" class="result" style="display: none;">
+            <!-- 测试结果将显示在这里 -->
+        </div>
+    </div>
+
+    <script>
+        // 模拟ModelManager类
+        class MockModelManager {
+            showMessage(message, type) {
+                console.log(`[${type.toUpperCase()}] ${message}`);
+                showResult(message, type);
+            }
+
+            async addModel(modelType, config) {
+                console.log(`添加${modelType}模型:`, config);
+                this.showMessage(`成功添加${modelType}模型: ${config.name}`, 'success');
+                return true;
+            }
+        }
+
+        // 模拟全局对象
+        window.settingsManager = {
+            modelManager: new MockModelManager()
+        };
+
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `<div class="${type}-message">${message}</div>`;
+        }
+
+        function testElementsExist() {
+            const requiredElements = [
+                'modelProvider', 'embeddingModel', 'embeddingDimension', 
+                'embeddingBatchSize', 'chunkSize', 'chunkOverlap', 
+                'embeddingTimeout', 'modelApiKey', 'modelBaseUrl',
+                'rerankingModel', 'rerankingBatchSize', 'rerankingMaxLength', 'rerankingTimeout'
+            ];
+            
+            const missingElements = requiredElements.filter(id => !document.getElementById(id));
+            
+            if (missingElements.length === 0) {
+                showResult('✅ 所有必需的界面元素都存在！', 'success');
+            } else {
+                showResult(`❌ 缺少元素: ${missingElements.join(', ')}`, 'error');
+            }
+        }
+
+        // 修复后的addEmbeddingModel函数
+        async function testAddEmbeddingModel() {
+            if (!window.settingsManager || !window.settingsManager.modelManager) return;
+
+            // 检查所有必需的元素是否存在
+            const requiredElements = [
+                'modelProvider', 'embeddingModel', 'embeddingDimension', 
+                'embeddingBatchSize', 'chunkSize', 'chunkOverlap', 
+                'embeddingTimeout', 'modelApiKey', 'modelBaseUrl'
+            ];
+            
+            const missingElements = requiredElements.filter(id => !document.getElementById(id));
+            if (missingElements.length > 0) {
+                window.settingsManager.modelManager.showMessage(
+                    `缺少必需的界面元素: ${missingElements.join(', ')}`, 'error'
+                );
+                return;
+            }
+
+            const provider = document.getElementById('modelProvider').value;
+            const modelName = document.getElementById('embeddingModel').value;
+            const dimensions = parseInt(document.getElementById('embeddingDimension').value) || 1024;
+            const batchSize = parseInt(document.getElementById('embeddingBatchSize').value) || 100;
+            const chunkSize = parseInt(document.getElementById('chunkSize').value) || 512;
+            const chunk_overlap = parseInt(document.getElementById('chunkOverlap').value) || 100;
+            const embeddingTimeout = parseFloat(document.getElementById('embeddingTimeout').value) || 30;
+
+            if (!provider || !modelName) {
+                window.settingsManager.modelManager.showMessage('请填写完整的模型信息', 'error');
+                return;
+            }
+
+            const config = {
+                name: `${provider}_${modelName.replace(/[^a-zA-Z0-9]/g, '_')}`,
+                provider: provider,
+                model_name: modelName,
+                config: {
+                    batch_size: batchSize,
+                    dimensions: dimensions,
+                    chunk_size: chunkSize,
+                    chunk_overlap: chunk_overlap,
+                    timeout: embeddingTimeout,
+                    api_key: document.getElementById('modelApiKey').value,
+                    base_url: document.getElementById('modelBaseUrl').value
+                },
+                enabled: true,
+                priority: 5
+            };
+
+            await window.settingsManager.modelManager.addModel('embedding', config);
+        }
+
+        // 修复后的addRerankingModel函数
+        async function testAddRerankingModel() {
+            if (!window.settingsManager || !window.settingsManager.modelManager) return;
+
+            // 检查所有必需的元素是否存在
+            const requiredElements = [
+                'modelProvider', 'rerankingModel', 'rerankingBatchSize', 
+                'rerankingMaxLength', 'rerankingTimeout', 'modelApiKey', 'modelBaseUrl'
+            ];
+            
+            const missingElements = requiredElements.filter(id => !document.getElementById(id));
+            if (missingElements.length > 0) {
+                window.settingsManager.modelManager.showMessage(
+                    `缺少必需的界面元素: ${missingElements.join(', ')}`, 'error'
+                );
+                return;
+            }
+
+            const provider = document.getElementById('modelProvider').value;
+            const modelName = document.getElementById('rerankingModel').value;
+            const batchSize = parseInt(document.getElementById('rerankingBatchSize').value) || 32;
+            const maxLength = parseInt(document.getElementById('rerankingMaxLength').value) || 512;
+            const timeout = parseFloat(document.getElementById('rerankingTimeout').value) || 30.0;
+
+            if (!provider || !modelName) {
+                window.settingsManager.modelManager.showMessage('请填写完整的模型信息', 'error');
+                return;
+            }
+
+            const config = {
+                name: `${provider}_${modelName.replace(/[^a-zA-Z0-9]/g, '_')}`,
+                provider: provider,
+                model_name: modelName,
+                config: {
+                    batch_size: batchSize,
+                    max_length: maxLength,
+                    timeout: timeout,
+                    api_key: document.getElementById('modelApiKey').value,
+                    base_url: document.getElementById('modelBaseUrl').value
+                },
+                enabled: true,
+                priority: 5
+            };
+
+            await window.settingsManager.modelManager.addModel('reranking', config);
+        }
+
+        // 页面加载完成后自动检查元素
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始检查元素...');
+            setTimeout(testElementsExist, 500);
+        });
+    </script>
+</body>
+</html>

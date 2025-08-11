@@ -1,0 +1,41 @@
+# DeepSeek 配置示例
+# 适用于使用 DeepSeek 模型的场景，性价比高
+
+llm:
+  provider: "deepseek"
+  model: "deepseek-chat"  # 或 deepseek-coder（适合代码相关任务）
+  api_key: "${DEEPSEEK_API_KEY}"  # 从环境变量读取
+  base_url: "https://api.deepseek.com/v1"
+  temperature: 0.7  # 控制输出的随机性
+  max_tokens: 2000  # 最大生成令牌数
+  timeout: 60  # 请求超时时间（秒）
+  retry_attempts: 3  # 失败重试次数
+  top_p: 0.95  # 核采样参数
+  frequency_penalty: 0.0  # 频率惩罚
+  presence_penalty: 0.0  # 存在惩罚
+
+embeddings:
+  provider: "deepseek"
+  model: "deepseek-embedding"  # DeepSeek 嵌入模型
+  api_key: "${DEEPSEEK_API_KEY}"  # 从环境变量读取
+  base_url: "https://api.deepseek.com/v1"
+  dimensions: 1536  # deepseek-embedding 的维度
+  batch_size: 100  # 批处理大小
+  timeout: 60  # 请求超时时间（秒）
+  max_concurrent_requests: 5  # 最大并发请求数
+
+# 模型特点：
+# - deepseek-chat: 通用对话模型，性价比高
+# - deepseek-coder: 专门针对代码生成和理解优化
+# - deepseek-embedding: 高质量嵌入模型
+
+# 使用说明：
+# 1. 注册 DeepSeek 账号获取 API Key
+# 2. 设置环境变量：export DEEPSEEK_API_KEY="your-api-key"
+# 3. DeepSeek 模型在中文和代码任务上表现优秀
+# 4. 成本相对较低，适合大规模应用
+
+# 性能优化建议：
+# - 代码相关任务使用 deepseek-coder
+# - 一般对话任务使用 deepseek-chat
+# - 可以适当提高 batch_size 以提升吞吐量

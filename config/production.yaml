@@ -1,0 +1,155 @@
+# RAG Knowledge QA System - Production Configuration
+
+# Application Settings
+app:
+  name: "RAG Knowledge QA System"
+  version: "1.0.0"
+  environment: "production"
+  debug: false
+  log_level: "INFO"
+  secret_key: "${SECRET_KEY}"
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  timeout: 300
+  max_request_size: 104857600  # 100MB
+  cors_origins:
+    - "https://yourdomain.com"
+    - "https://www.yourdomain.com"
+
+# Database Configuration
+database:
+  url: "${DATABASE_URL}"
+  pool_size: 20
+  max_overflow: 30
+  pool_timeout: 30
+  pool_recycle: 3600
+  echo: false
+
+# Vector Database Configuration
+vector_db:
+  type: "chroma"
+  host: "${CHROMA_HOST}"
+  port: ${CHROMA_PORT}
+  collection_name: "rag_documents"
+  distance_metric: "cosine"
+  
+# Redis Configuration
+redis:
+  url: "${REDIS_URL}"
+  max_connections: 50
+  retry_on_timeout: true
+  socket_timeout: 5
+  socket_connect_timeout: 5
+
+# LLM Configuration
+llm:
+  provider: "${LLM_PROVIDER}"
+  model: "${OPENAI_MODEL}"
+  api_key: "${OPENAI_API_KEY}"
+  max_tokens: 500
+  temperature: 0.7
+  timeout: 60
+  retry_attempts: 3
+  retry_delay: 1
+
+# Embedding Configuration
+embedding:
+  provider: "${EMBEDDING_PROVIDER}"
+  model: "${OPENAI_EMBEDDING_MODEL}"
+  api_key: "${OPENAI_API_KEY}"
+  dimension: 1536
+  batch_size: 100
+  timeout: 60
+  retry_attempts: 3
+
+# Document Processing Configuration
+document_processing:
+  max_file_size: 104857600  # 100MB
+  allowed_extensions:
+    - "pdf"
+    - "docx"
+    - "txt"
+    - "md"
+  chunk_size: 500
+  chunk_overlap: 50
+  max_chunks_per_document: 1000
+  processing_timeout: 300
+
+# Search Configuration
+search:
+  max_results: 5
+  similarity_threshold: 0.7
+  rerank_results: true
+  cache_results: true
+  cache_ttl: 3600
+
+# File Storage Configuration
+storage:
+  upload_dir: "/app/uploads"
+  data_dir: "/app/data"
+  log_dir: "/app/logs"
+  max_storage_size: 10737418240  # 10GB
+  cleanup_interval: 86400  # 24 hours
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_rotation: true
+  max_file_size: 10485760  # 10MB
+  backup_count: 5
+  handlers:
+    - type: "file"
+      filename: "/app/logs/app.log"
+    - type: "file"
+      filename: "/app/logs/error.log"
+      level: "ERROR"
+
+# Monitoring Configuration
+monitoring:
+  enabled: true
+  metrics_port: 9090
+  health_check_interval: 30
+  performance_tracking: true
+  error_tracking: true
+
+# Security Configuration
+security:
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+    burst_size: 10
+  authentication:
+    enabled: false  # Set to true if implementing auth
+    jwt_secret: "${JWT_SECRET}"
+    token_expiry: 3600
+  encryption:
+    enabled: true
+    algorithm: "AES-256-GCM"
+
+# Cache Configuration
+cache:
+  enabled: true
+  default_ttl: 3600
+  max_size: 1000
+  cleanup_interval: 300
+
+# Performance Configuration
+performance:
+  connection_pool_size: 20
+  worker_timeout: 300
+  keep_alive_timeout: 5
+  max_concurrent_requests: 100
+  request_timeout: 60
+
+# Backup Configuration
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention_days: 30
+  compression: true
+  encryption: true

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>简单测试</title>
+</head>
+<body>
+    <h1>统计测试</h1>
+    <div>总文档数: <span id="total">加载中...</span></div>
+    <div>已就绪: <span id="ready">加载中...</span></div>
+    <div>处理中: <span id="processing">加载中...</span></div>
+    <div>处理失败: <span id="error">加载中...</span></div>
+    
+    <script>
+        async function loadStats() {
+            try {
+                console.log('开始加载统计数据...');
+                const response = await fetch('http://localhost:8000/documents/stats/summary');
+                console.log('响应状态:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const stats = await response.json();
+                console.log('统计数据:', stats);
+                
+                document.getElementById('total').textContent = stats.total_documents || 0;
+                document.getElementById('ready').textContent = stats.ready_documents || 0;
+                document.getElementById('processing').textContent = stats.processing_documents || 0;
+                document.getElementById('error').textContent = stats.error_documents || 0;
+                
+                console.log('统计数据更新完成');
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+                document.getElementById('total').textContent = '错误';
+                document.getElementById('ready').textContent = '错误';
+                document.getElementById('processing').textContent = '错误';
+                document.getElementById('error').textContent = '错误';
+            }
+        }
+        
+        // 页面加载后立即执行
+        window.addEventListener('load', loadStats);
+    </script>
+</body>
+</html>

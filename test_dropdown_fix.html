@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下拉列表图标修复测试</title>
+    <link rel="stylesheet" href="frontend/styles/themes.css">
+    <link rel="stylesheet" href="frontend/styles/components.css">
+    <link rel="stylesheet" href="frontend/styles/settings-interface.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            padding: 2rem;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .theme-switcher {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .theme-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+        
+        .theme-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .theme-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .test-section {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        h1, h2 {
+            color: var(--text-primary);
+        }
+        
+        .status {
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+        
+        .status.success {
+            background: var(--success-bg);
+            color: var(--success-color);
+            border: 1px solid var(--success-border);
+        }
+        
+        .status.error {
+            background: var(--danger-bg);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-border);
+        }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="test-container">
+        <h1><i class="fas fa-bug"></i> 下拉列表图标修复测试</h1>
+        
+        <div class="theme-switcher">
+            <span><strong>主题切换：</strong></span>
+            <button class="theme-btn active" onclick="switchTheme('light')">
+                <i class="fas fa-sun"></i> 浅色
+            </button>
+            <button class="theme-btn" onclick="switchTheme('dark')">
+                <i class="fas fa-moon"></i> 深色
+            </button>
+        </div>
+        
+        <div id="status" class="status success">
+            <i class="fas fa-check-circle"></i> 样式加载正常，应该只显示一个下拉箭头
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-caret-down"></i> 下拉列表测试</h2>
+            
+            <div class="form-group">
+                <label for="provider">模型提供商（检查是否只有一个箭头）</label>
+                <select id="provider" class="form-select">
+                    <option value="">请选择提供商</option>
+                    <option value="openai">OpenAI</option>
+                    <option value="siliconflow">SiliconFlow</option>
+                    <option value="anthropic">Anthropic</option>
+                    <option value="google">Google</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="language">语言设置</label>
+                <select id="language" class="form-select">
+                    <option value="zh-CN">简体中文</option>
+                    <option value="en-US">English</option>
+                    <option value="ja-JP">日本語</option>
+                    <option value="ko-KR">한국어</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="mode">搜索模式</label>
+                <select id="mode" class="form-select">
+                    <option value="semantic">语义搜索</option>
+                    <option value="keyword">关键词搜索</option>
+                    <option value="hybrid">混合搜索</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-info-circle"></i> 修复说明</h2>
+            <p>修复了以下问题：</p>
+            <ul>
+                <li>✅ 移除了重复的CSS样式定义</li>
+                <li>✅ 统一了下拉箭头图标的显示</li>
+                <li>✅ 修复了深色主题下的箭头颜色</li>
+                <li>✅ 确保每个下拉列表只显示一个箭头</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function switchTheme(theme) {
+            const body = document.body;
+            const buttons = document.querySelectorAll('.theme-btn');
+            const status = document.getElementById('status');
+            
+            // 移除所有主题类
+            body.classList.remove('light-theme', 'dark-theme');
+            
+            // 添加新主题类
+            body.classList.add(`${theme}-theme`);
+            
+            // 更新按钮状态
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 更新状态信息
+            status.innerHTML = `<i class="fas fa-check-circle"></i> 已切换到${theme === 'light' ? '浅色' : '深色'}主题，检查下拉箭头是否正常`;
+            
+            console.log(`已切换到${theme === 'light' ? '浅色' : '深色'}主题`);
+        }
+        
+        // 页面加载完成后检查
+        window.addEventListener('load', () => {
+            console.log('🔧 下拉列表图标修复测试页面已加载');
+            
+            // 检查是否有重复的背景图片
+            const selects = document.querySelectorAll('select');
+            selects.forEach((select, index) => {
+                const computedStyle = window.getComputedStyle(select);
+                const backgroundImage = computedStyle.backgroundImage;
+                console.log(`Select ${index + 1} background-image:`, backgroundImage);
+                
+                // 检查是否包含多个SVG
+                const svgCount = (backgroundImage.match(/data:image\/svg/g) || []).length;
+                if (svgCount > 1) {
+                    console.warn(`⚠️ Select ${index + 1} 包含 ${svgCount} 个背景图片，可能有重复！`);
+                    document.getElementById('status').className = 'status error';
+                    document.getElementById('status').innerHTML = `<i class="fas fa-exclamation-triangle"></i> 检测到重复的下拉箭头，需要进一步修复`;
+                } else {
+                    console.log(`✅ Select ${index + 1} 背景图片正常`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

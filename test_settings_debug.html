@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置页面调试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .debug-output { background: #f5f5f5; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 15px; margin: 5px; }
+        .error { color: red; }
+        .success { color: green; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🔍 设置页面调试工具</h1>
+    
+    <div class="debug-section">
+        <h2>1. API连接测试</h2>
+        <button onclick="testConfigAPI()">测试配置API</button>
+        <button onclick="testMonitoringAPI()">测试监控API</button>
+        <div id="apiTestResult" class="debug-output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>2. 配置数据结构</h2>
+        <button onclick="loadAndShowConfig()">加载并显示配置</button>
+        <div id="configStructure" class="debug-output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>3. 设置表单测试</h2>
+        <button onclick="testFormPopulation()">测试表单填充</button>
+        <div id="formTestResult" class="debug-output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>4. 监控数据展示</h2>
+        <button onclick="loadMonitoringData()">加载监控数据</button>
+        <div id="monitoringData" class="debug-output"></div>
+    </div>
+
+    <script>
+        // 简化的API客户端
+        class SimpleAPIClient {
+            constructor(baseURL = 'http://localhost:8000') {
+                this.baseURL = baseURL;
+            }
+
+            async request(url, options = {}) {
+                const config = {
+                    headers: { 'Content-Type': 'application/json' },
+                    ...options
+                };
+
+                try {
+                    const response = await fetch(`${this.baseURL}${url}`, config);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error('API请求失败:', error);
+                    throw error;
+                }
+            }
+
+            async get(url) {
+                return this.request(url, { method: 'GET' });
+            }
+
+            async post(url, data) {
+                return this.request(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+            }
+        }
+
+        const api = new SimpleAPIClient();
+
+        // 测试配置API
+        async function testConfigAPI() {
+            const resultDiv = document.getElementById('apiTestResult');
+            resultDiv.innerHTML = '<p class="info">测试中...</p>';
+            
+            const tests = [
+                { name: '获取完整配置', url: '/config/' },
+                { name: '获取LLM配置', url: '/config/llm' },
+                { name: '获取嵌入配置', url: '/config/embeddings' },
+                { name: '获取检索配置', url: '/config/retrieval' },
+                { name: '健康检查', url: '/config/health' }
+            ];
+            
+            let results = [];
+            
+            for (const test of tests) {
+                try {
+                    const result = await api.get(test.url);
+                    results.push(`<p class="success">✅ ${test.name}: 成功</p>`);
+                    console.log(`${test.name}:`, result);
+                } catch (error) {
+                    results.push(`<p class="error">❌ ${test.name}: ${error.message}</p>`);
+                }
+            }
+            
+            resultDiv.innerHTML = results.join('');
+        }
+
+        // 测试监控API
+        async function testMonitoringAPI() {
+            const resultDiv = document.getElementById('apiTestResult');
+            resultDiv.innerHTML += '<hr><p class="info">测试监控API...</p>';
+            
+            const monitoringTests = [
+                { name: '系统状态', url: '/monitoring/status' },
+                { name: '性能指标', url: '/monitoring/metrics' },
+                { name: '健康检查', url: '/monitoring/health' }
+            ];
+            
+            let results = [];
+            
+            for (const test of monitoringTests) {
+                try {
+                    const result = await api.get(test.url);
+                    results.push(`<p class="success">✅ ${test.name}: 成功</p>`);
+                    console.log(`监控-${test.name}:`, result);
+                } catch (error) {
+                    results.push(`<p class="error">❌ ${test.name}: ${error.message}</p>`);
+                }
+            }
+            
+            resultDiv.innerHTML += results.join('');
+        }
+
+        // 加载并显示配置
+        async function loadAndShowConfig() {
+            const resultDiv = document.getElementById('configStructure');
+            resultDiv.innerHTML = '<p class="info">加载配置中...</p>';
+            
+            try {
+                const config = await api.get('/config/');
+                
+                // 显示配置结构
+                const configData = config.config || config;
+                
+                let html = '<h3>📋 配置数据结构:</h3>';
+                html += '<pre>' + JSON.stringify(configData, null, 2) + '</pre>';
+                
+                // 检查关键字段
+                html += '<h3>🔍 关键字段检查:</h3>';
+                html += `<p>应用名称: ${configData.app?.name || '❌ 未找到'}</p>`;
+                html += `<p>LLM提供商: ${configData.llm?.provider || '❌ 未找到'}</p>`;
+                html += `<p>LLM模型: ${configData.llm?.model || '❌ 未找到'}</p>`;
+                html += `<p>LLM温度: ${configData.llm?.temperature || '❌ 未找到'}</p>`;
+                html += `<p>嵌入提供商: ${configData.embeddings?.provider || '❌ 未找到'}</p>`;
+                html += `<p>嵌入模型: ${configData.embeddings?.model || '❌ 未找到'}</p>`;
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ 加载配置失败: ${error.message}</p>`;
+            }
+        }
+
+        // 测试表单填充
+        async function testFormPopulation() {
+            const resultDiv = document.getElementById('formTestResult');
+            resultDiv.innerHTML = '<p class="info">测试表单填充...</p>';
+            
+            try {
+                const config = await api.get('/config/');
+                const configData = config.config || config;
+                
+                // 模拟表单字段
+                const formFields = {
+                    'systemName': configData.app?.name,
+                    'llmProvider': configData.llm?.provider,
+                    'llmModel': configData.llm?.model,
+                    'llmTemperature': configData.llm?.temperature,
+                    'llmMaxTokens': configData.llm?.max_tokens,
+                    'embeddingProvider': configData.embeddings?.provider,
+                    'embeddingModel': configData.embeddings?.model,
+                    'chunkSize': configData.embeddings?.chunk_size,
+                    'topK': configData.retrieval?.top_k,
+                    'similarityThreshold': configData.retrieval?.similarity_threshold
+                };
+                
+                let html = '<h3>📝 表单字段映射测试:</h3>';
+                for (const [field, value] of Object.entries(formFields)) {
+                    const status = value !== undefined && value !== null ? '✅' : '❌';
+                    html += `<p>${status} ${field}: ${value || '未找到'}</p>`;
+                }
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ 表单填充测试失败: ${error.message}</p>`;
+            }
+        }
+
+        // 加载监控数据
+        async function loadMonitoringData() {
+            const resultDiv = document.getElementById('monitoringData');
+            resultDiv.innerHTML = '<p class="info">加载监控数据...</p>';
+            
+            try {
+                // 尝试不同的监控端点
+                const endpoints = [
+                    '/monitoring/status',
+                    '/monitoring/health', 
+                    '/monitoring/metrics',
+                    '/config/health'  // 配置API的健康检查
+                ];
+                
+                let html = '<h3>📊 监控数据:</h3>';
+                
+                for (const endpoint of endpoints) {
+                    try {
+                        const data = await api.get(endpoint);
+                        html += `<h4>✅ ${endpoint}:</h4>`;
+                        html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    } catch (error) {
+                        html += `<h4>❌ ${endpoint}: ${error.message}</h4>`;
+                    }
+                }
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ 加载监控数据失败: ${error.message}</p>`;
+            }
+        }
+
+        // 页面加载时自动测试
+        window.onload = function() {
+            console.log('🚀 设置页面调试工具已加载');
+            // 自动加载配置
+            loadAndShowConfig();
+        };
+    </script>
+</body>
+</html>

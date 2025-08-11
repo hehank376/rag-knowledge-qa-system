@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置保存调试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .debug-output { background: #f5f5f5; padding: 10px; margin: 10px 0; white-space: pre-wrap; }
+        button { padding: 10px 15px; margin: 5px; }
+        .error { color: red; }
+        .success { color: green; }
+        .info { color: blue; }
+        input, select { padding: 5px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 设置保存调试工具</h1>
+    
+    <div class="debug-section">
+        <h2>1. 测试配置验证</h2>
+        <button onclick="testConfigValidation()">测试配置验证</button>
+        <div id="validationResult" class="debug-output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>2. 测试配置保存</h2>
+        <div>
+            <label>LLM提供商: </label>
+            <select id="llmProvider">
+                <option value="siliconflow">SiliconFlow</option>
+                <option value="openai">OpenAI</option>
+                <option value="deepseek">DeepSeek</option>
+            </select>
+        </div>
+        <div>
+            <label>LLM模型: </label>
+            <input type="text" id="llmModel" value="Qwen/Qwen2-7B-Instruct">
+        </div>
+        <div>
+            <label>温度: </label>
+            <input type="number" id="llmTemperature" value="0.7" step="0.1" min="0" max="2">
+        </div>
+        <div>
+            <label>最大令牌: </label>
+            <input type="number" id="llmMaxTokens" value="2000" min="100" max="4000">
+        </div>
+        <button onclick="testConfigSave()">测试配置保存</button>
+        <div id="saveResult" class="debug-output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>3. 测试单个配置节保存</h2>
+        <button onclick="testSingleSectionSave()">测试LLM配置保存</button>
+        <div id="singleSaveResult" class="debug-output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>4. 查看网络请求详情</h2>
+        <button onclick="enableNetworkLogging()">启用网络日志</button>
+        <div id="networkLog" class="debug-output"></div>
+    </div>
+
+    <script>
+        // 简化的API客户端
+        class DebugAPIClient {
+            constructor(baseURL = 'http://localhost:8000') {
+                this.baseURL = baseURL;
+                this.networkLog = [];
+            }
+
+            async request(url, options = {}) {
+                const config = {
+                    headers: { 'Content-Type': 'application/json' },
+                    ...options
+                };
+
+                const requestInfo = {
+                    url: `${this.baseURL}${url}`,
+                    method: config.method || 'GET',
+                    headers: config.headers,
+                    body: config.body,
+                    timestamp: new Date().toISOString()
+                };
+
+                this.networkLog.push({ type: 'request', ...requestInfo });
+                this.updateNetworkLog();
+
+                try {
+                    const response = await fetch(`${this.baseURL}${url}`, config);
+                    
+                    const responseInfo = {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: Object.fromEntries(response.headers.entries()),
+                        timestamp: new Date().toISOString()
+                    };
+
+                    this.networkLog.push({ type: 'response', ...responseInfo });
+
+                    if (!response.ok) {
+                        let errorData;
+                        try {
+                            errorData = await response.json();
+                        } catch {
+                            errorData = { detail: response.statusText };
+                        }
+                        
+                        this.networkLog.push({ 
+                            type: 'error', 
+                            error: errorData,
+                            timestamp: new Date().toISOString()
+                        });
+                        
+                        throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const contentType = response.headers.get('content-type');
+                    let responseData;
+                    if (contentType && contentType.includes('application/json')) {
+                        responseData = await response.json();
+                    } else {
+                        responseData = await response.text();
+                    }
+
+                    this.networkLog.push({ 
+                        type: 'data', 
+                        data: responseData,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    this.updateNetworkLog();
+                    return responseData;
+
+                } catch (error) {
+                    this.networkLog.push({ 
+                        type: 'exception', 
+                        error: error.message,
+                        timestamp: new Date().toISOString()
+                    });
+                    this.updateNetworkLog();
+                    throw error;
+                }
+            }
+
+            updateNetworkLog() {
+                const logDiv = document.getElementById('networkLog');
+                if (logDiv) {
+                    logDiv.textContent = JSON.stringify(this.networkLog, null, 2);
+                }
+            }
+
+            async get(url) {
+                return this.request(url, { method: 'GET' });
+            }
+
+            async post(url, data) {
+                return this.request(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+            }
+
+            async put(url, data) {
+                return this.request(url, {
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                });
+            }
+        }
+
+        const debugAPI = new DebugAPIClient();
+
+        // 测试配置验证
+        async function testConfigValidation() {
+            const resultDiv = document.getElementById('validationResult');
+            resultDiv.textContent = '测试配置验证中...';
+            
+            const testConfig = {
+                provider: document.getElementById('llmProvider').value,
+                model: document.getElementById('llmModel').value,
+                temperature: parseFloat(document.getElementById('llmTemperature').value),
+                max_tokens: parseInt(document.getElementById('llmMaxTokens').value)
+            };
+            
+            try {
+                const result = await debugAPI.post('/config/validate', {
+                    section: 'llm',
+                    config: testConfig
+                });
+                
+                resultDiv.textContent = `✅ 验证成功:\n${JSON.stringify(result, null, 2)}`;
+                resultDiv.className = 'debug-output success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ 验证失败:\n${error.message}`;
+                resultDiv.className = 'debug-output error';
+            }
+        }
+
+        // 测试配置保存
+        async function testConfigSave() {
+            const resultDiv = document.getElementById('saveResult');
+            resultDiv.textContent = '测试配置保存中...';
+            
+            const settings = {
+                app: {
+                    name: "RAG Knowledge QA System (Dev)",
+                    debug: true
+                },
+                llm: {
+                    provider: document.getElementById('llmProvider').value,
+                    model: document.getElementById('llmModel').value,
+                    temperature: parseFloat(document.getElementById('llmTemperature').value),
+                    max_tokens: parseInt(document.getElementById('llmMaxTokens').value)
+                },
+                embeddings: {
+                    provider: "siliconflow",
+                    model: "BAAI/bge-large-zh-v1.5",
+                    chunk_size: 400,
+                    chunk_overlap: 50
+                }
+            };
+            
+            try {
+                // 先验证
+                const validationResult = await debugAPI.post('/config/validate', {
+                    section: 'all',
+                    config: settings
+                });
+                
+                if (!validationResult.valid) {
+                    throw new Error(`配置验证失败: ${JSON.stringify(validationResult.errors)}`);
+                }
+                
+                // 再保存
+                const saveResult = await debugAPI.put('/config/all', settings);
+                
+                resultDiv.textContent = `✅ 保存成功:\n${JSON.stringify(saveResult, null, 2)}`;
+                resultDiv.className = 'debug-output success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ 保存失败:\n${error.message}`;
+                resultDiv.className = 'debug-output error';
+            }
+        }
+
+        // 测试单个配置节保存
+        async function testSingleSectionSave() {
+            const resultDiv = document.getElementById('singleSaveResult');
+            resultDiv.textContent = '测试单个配置节保存中...';
+            
+            const llmConfig = {
+                provider: document.getElementById('llmProvider').value,
+                model: document.getElementById('llmModel').value,
+                temperature: parseFloat(document.getElementById('llmTemperature').value),
+                max_tokens: parseInt(document.getElementById('llmMaxTokens').value)
+            };
+            
+            try {
+                const result = await debugAPI.put('/config/llm', llmConfig);
+                
+                resultDiv.textContent = `✅ 单个配置节保存成功:\n${JSON.stringify(result, null, 2)}`;
+                resultDiv.className = 'debug-output success';
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ 单个配置节保存失败:\n${error.message}`;
+                resultDiv.className = 'debug-output error';
+            }
+        }
+
+        // 启用网络日志
+        function enableNetworkLogging() {
+            debugAPI.networkLog = [];
+            debugAPI.updateNetworkLog();
+            document.getElementById('networkLog').textContent = '网络日志已启用，执行其他操作查看详细请求信息...';
+        }
+
+        // 页面加载时初始化
+        window.onload = function() {
+            console.log('🔧 设置保存调试工具已加载');
+            enableNetworkLogging();
+        };
+    </script>
+</body>
+</html>

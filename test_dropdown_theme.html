@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下拉列表主题测试</title>
+    <link rel="stylesheet" href="frontend/styles/themes.css">
+    <link rel="stylesheet" href="frontend/styles/components.css">
+    <link rel="stylesheet" href="frontend/styles/settings-interface.css">
+    <link rel="stylesheet" href="frontend/styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            padding: 2rem;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .theme-switcher {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .theme-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+        
+        .theme-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .theme-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .test-section {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .test-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .test-label {
+            min-width: 150px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .demo-card {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        h1, h2, h3 {
+            color: var(--text-primary);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-light { background: var(--primary-color); }
+        .status-dark { background: var(--text-secondary); }
+    </style>
+</head>
+<body class="light-theme">
+    <div class="test-container">
+        <h1><i class="fas fa-palette"></i> 下拉列表主题样式测试</h1>
+        
+        <div class="theme-switcher">
+            <span><strong>主题切换：</strong></span>
+            <button class="theme-btn active" onclick="switchTheme('light')">
+                <i class="fas fa-sun"></i> 浅色主题
+            </button>
+            <button class="theme-btn" onclick="switchTheme('dark')">
+                <i class="fas fa-moon"></i> 深色主题
+            </button>
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-cog"></i> 设置界面样式测试</h2>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <div class="form-group">
+                        <label for="llmProvider">模型提供商</label>
+                        <select id="llmProvider" class="form-select">
+                            <option value="">请选择提供商</option>
+                            <option value="openai">OpenAI</option>
+                            <option value="siliconflow">SiliconFlow</option>
+                            <option value="anthropic">Anthropic</option>
+                            <option value="google">Google</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="defaultLanguage">默认语言</label>
+                        <select id="defaultLanguage" class="form-select">
+                            <option value="zh-CN">简体中文</option>
+                            <option value="en-US">English</option>
+                            <option value="ja-JP">日本語</option>
+                            <option value="ko-KR">한국어</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <div class="form-group">
+                        <label for="searchMode">搜索模式</label>
+                        <select id="searchMode" class="form-select">
+                            <option value="semantic">语义搜索</option>
+                            <option value="keyword">关键词搜索</option>
+                            <option value="hybrid">混合搜索</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="logLevel">日志级别</label>
+                        <select id="logLevel" class="form-select">
+                            <option value="DEBUG">调试</option>
+                            <option value="INFO" selected>信息</option>
+                            <option value="WARNING">警告</option>
+                            <option value="ERROR">错误</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-list"></i> 各种下拉列表样式</h2>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>标准下拉列表</h3>
+                    <div class="test-row">
+                        <label class="test-label">文档排序：</label>
+                        <select class="form-select" style="width: 200px;">
+                            <option value="name">按名称排序</option>
+                            <option value="date">按日期排序</option>
+                            <option value="size">按大小排序</option>
+                            <option value="type">按类型排序</option>
+                        </select>
+                    </div>
+                    
+                    <div class="test-row">
+                        <label class="test-label">每页显示：</label>
+                        <select class="form-select" style="width: 200px;">
+                            <option value="10">10 条</option>
+                            <option value="20">20 条</option>
+                            <option value="50">50 条</option>
+                            <option value="100">100 条</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>禁用状态测试</h3>
+                    <div class="test-row">
+                        <label class="test-label">禁用选择：</label>
+                        <select class="form-select" disabled style="width: 200px;">
+                            <option value="disabled">禁用选项</option>
+                        </select>
+                    </div>
+                    
+                    <div class="test-row">
+                        <label class="test-label">长选项文本：</label>
+                        <select class="form-select" style="width: 200px;">
+                            <option value="short">短选项</option>
+                            <option value="long">这是一个很长的选项文本，用来测试长文本的显示效果</option>
+                            <option value="medium">中等长度的选项文本</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-info-circle"></i> 样式说明</h2>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3><span class="status-indicator status-light"></span>浅色主题特点</h3>
+                    <ul>
+                        <li>白色背景，深色文本</li>
+                        <li>浅灰色悬停效果</li>
+                        <li>蓝色焦点边框</li>
+                        <li>灰色下拉箭头</li>
+                    </ul>
+                </div>
+                
+                <div class="demo-card">
+                    <h3><span class="status-indicator status-dark"></span>深色主题特点</h3>
+                    <ul>
+                        <li>深色背景，白色文本</li>
+                        <li>较亮的深色悬停效果</li>
+                        <li>蓝色焦点边框</li>
+                        <li>浅色下拉箭头</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTheme(theme) {
+            const body = document.body;
+            const buttons = document.querySelectorAll('.theme-btn');
+            
+            // 移除所有主题类
+            body.classList.remove('light-theme', 'dark-theme');
+            
+            // 添加新主题类
+            body.classList.add(`${theme}-theme`);
+            
+            // 更新按钮状态
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            console.log(`已切换到${theme === 'light' ? '浅色' : '深色'}主题`);
+        }
+        
+        // 页面加载完成后的提示
+        window.addEventListener('load', () => {
+            console.log('🎨 下拉列表主题测试页面已加载');
+            console.log('请点击不同的主题按钮测试下拉列表的显示效果');
+            
+            // 添加交互提示
+            const selects = document.querySelectorAll('select');
+            selects.forEach(select => {
+                select.addEventListener('focus', () => {
+                    console.log('下拉列表获得焦点，测试焦点样式');
+                });
+                
+                select.addEventListener('change', (e) => {
+                    console.log(`选择了选项: ${e.target.value}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

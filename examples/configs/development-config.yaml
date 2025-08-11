@@ -1,0 +1,179 @@
+# 开发环境配置示例
+# 针对开发和测试环境优化，注重调试便利性和成本控制
+
+llm:
+  provider: "mock"  # 开发环境使用模拟提供商
+  model: "mock-llm"
+  api_key: "dev-test-key"  # 开发环境可以使用固定的测试密钥
+  temperature: 0.7
+  max_tokens: 1000  # 较小的token限制以节省成本
+  timeout: 60
+  retry_attempts: 2  # 较少的重试次数
+  
+  # 开发环境特有配置
+  debug: true  # 启用调试模式
+  log_requests: true   # 记录所有请求用于调试
+  log_responses: true  # 记录所有响应用于调试
+  log_errors: true     # 记录错误
+  verbose_logging: true # 详细日志
+  
+  # 开发便利性配置
+  mock_responses: true  # 使用模拟响应
+  mock_delay: 1.0      # 模拟网络延迟（秒）
+  deterministic: true   # 确定性输出，便于测试
+
+embeddings:
+  provider: "mock"
+  model: "mock-embedding"
+  api_key: "dev-test-key"
+  dimensions: 1024
+  batch_size: 50  # 较小的批处理大小
+  timeout: 60
+  max_concurrent_requests: 2
+  
+  # 开发环境特有配置
+  debug: true
+  log_requests: true
+  log_responses: true
+  mock_responses: true
+  mock_delay: 0.5
+  deterministic: true
+
+# 真实API测试配置（可选，用于集成测试）
+# 取消注释以下配置来测试真实的API连接
+real_api_test:
+  llm:
+    provider: "siliconflow"
+    model: "Qwen/Qwen2-7B-Instruct"  # 使用较小的模型节省成本
+    api_key: "${SILICONFLOW_API_KEY}"
+    base_url: "https://api.siliconflow.cn/v1"
+    temperature: 0.8  # 开发环境可以使用较高温度测试多样性
+    max_tokens: 500   # 限制token数量控制成本
+    timeout: 30
+    retry_attempts: 1  # 开发环境快速失败
+    
+    # 开发调试配置
+    debug: true
+    log_requests: true
+    log_responses: true
+    
+  embeddings:
+    provider: "siliconflow"
+    model: "BAAI/bge-base-zh-v1.5"  # 使用较小的模型
+    api_key: "${SILICONFLOW_API_KEY}"
+    base_url: "https://api.siliconflow.cn/v1"
+    dimensions: 768  # bge-base 的维度
+    batch_size: 20   # 小批次测试
+    timeout: 30
+    debug: true
+
+# 开发环境全局配置
+global:
+  # 调试配置
+  debug_mode: true
+  verbose_logging: true
+  log_level: "DEBUG"  # 详细的日志级别
+  
+  # 测试配置
+  enable_test_mode: true
+  test_data_path: "tests/data"
+  mock_external_services: true
+  
+  # 开发便利性
+  auto_reload: true  # 自动重载配置
+  hot_reload: true   # 热重载代码
+  
+  # 性能配置（开发环境不需要高性能）
+  enable_cache: false  # 禁用缓存以便测试
+  enable_metrics: true # 启用指标收集用于性能分析
+  
+  # 安全配置（开发环境相对宽松）
+  strict_validation: false  # 不严格验证，便于测试
+  allow_insecure_connections: true  # 允许不安全连接（仅开发环境）
+  
+  # 错误处理
+  fail_fast: true  # 快速失败，便于调试
+  detailed_errors: true  # 详细的错误信息
+  
+  # 数据保护（开发环境可以放宽）
+  data_encryption_enabled: false
+  pii_detection_enabled: false
+  content_filtering_enabled: false
+
+# 测试配置
+testing:
+  # 单元测试配置
+  unit_test:
+    provider: "mock"
+    mock_all_responses: true
+    deterministic_responses: true
+    
+  # 集成测试配置
+  integration_test:
+    provider: "siliconflow"  # 使用真实API进行集成测试
+    model: "Qwen/Qwen2-7B-Instruct"
+    api_key: "${SILICONFLOW_TEST_API_KEY}"
+    rate_limit: 10  # 限制测试时的请求频率
+    
+  # 性能测试配置
+  performance_test:
+    provider: "mock"
+    simulate_latency: true
+    latency_range: [0.1, 2.0]  # 模拟延迟范围
+    simulate_failures: true
+    failure_rate: 0.05  # 5%的失败率
+
+# 开发工具配置
+dev_tools:
+  # API 调试工具
+  api_debugger:
+    enabled: true
+    log_all_requests: true
+    save_request_history: true
+    history_file: "logs/api_requests.log"
+    
+  # 性能分析工具
+  profiler:
+    enabled: true
+    profile_requests: true
+    profile_embeddings: true
+    output_file: "logs/performance.prof"
+    
+  # 配置验证工具
+  config_validator:
+    enabled: true
+    strict_mode: false  # 开发环境不使用严格模式
+    warn_on_issues: true
+    
+  # 模型测试工具
+  model_tester:
+    enabled: true
+    test_suite_path: "tests/model_tests"
+    auto_run_tests: false
+
+# 环境变量（开发环境）：
+# export SILICONFLOW_API_KEY="your-dev-api-key"
+# export SILICONFLOW_TEST_API_KEY="your-test-api-key"
+# export RAG_ENV="development"
+# export DEBUG="true"
+
+# 开发环境使用说明：
+# 1. 默认使用 mock 提供商，无需真实 API 密钥
+# 2. 启用详细日志和调试信息
+# 3. 可以通过修改配置快速切换到真实 API 测试
+# 4. 包含多种测试配置选项
+# 5. 优化了开发体验和调试便利性
+
+# 开发工作流建议：
+# 1. 日常开发使用 mock 提供商
+# 2. 功能完成后使用 real_api_test 配置测试
+# 3. 集成测试使用 integration_test 配置
+# 4. 性能测试使用 performance_test 配置
+# 5. 部署前使用接近生产的配置进行最终测试
+
+# 调试技巧：
+# 1. 查看 logs/api_requests.log 了解API调用详情
+# 2. 使用 verbose_logging 获取详细的执行信息
+# 3. 启用 deterministic 模式确保测试结果可重现
+# 4. 使用 mock_delay 模拟网络延迟测试超时处理
+# 5. 通过 failure_rate 测试错误处理逻辑

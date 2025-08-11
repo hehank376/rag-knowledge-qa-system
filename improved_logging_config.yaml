@@ -1,0 +1,51 @@
+disable_existing_loggers: false
+formatters:
+  detailed:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(module)s:%(lineno)d - %(message)s'
+  standard:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: standard
+    level: INFO
+    stream: ext://sys.stdout
+  error_file:
+    class: logging.FileHandler
+    encoding: utf-8
+    filename: qa_errors.log
+    formatter: detailed
+    level: ERROR
+    mode: a
+  file:
+    class: logging.FileHandler
+    encoding: utf-8
+    filename: qa_system.log
+    formatter: detailed
+    level: DEBUG
+    mode: a
+loggers:
+  chromadb:
+    handlers:
+    - file
+    level: WARNING
+    propagate: false
+  rag_system:
+    handlers:
+    - console
+    - file
+    - error_file
+    level: DEBUG
+    propagate: false
+  uvicorn:
+    handlers:
+    - console
+    - file
+    level: INFO
+    propagate: false
+root:
+  handlers:
+  - console
+  - file
+  level: INFO
+version: 1

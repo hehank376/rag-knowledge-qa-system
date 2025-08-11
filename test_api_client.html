@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>API客户端测试</title>
+</head>
+<body>
+    <h1>API客户端测试</h1>
+    <div id="result">测试中...</div>
+    
+    <script src="/frontend/js/api.js"></script>
+    <script>
+        async function testAPIClient() {
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                console.log('测试 apiClient 对象...');
+                console.log('apiClient:', apiClient);
+                console.log('apiClient.getDocumentStats:', apiClient.getDocumentStats);
+                
+                if (typeof apiClient.getDocumentStats !== 'function') {
+                    throw new Error('getDocumentStats 不是一个函数');
+                }
+                
+                console.log('调用 getDocumentStats...');
+                const stats = await apiClient.getDocumentStats();
+                console.log('统计数据:', stats);
+                
+                resultDiv.innerHTML = `
+                    <h2>✅ 测试成功！</h2>
+                    <p>总文档数: ${stats.total_documents}</p>
+                    <p>已就绪: ${stats.ready_documents}</p>
+                    <p>处理中: ${stats.processing_documents}</p>
+                    <p>处理失败: ${stats.error_documents}</p>
+                `;
+                
+            } catch (error) {
+                console.error('测试失败:', error);
+                resultDiv.innerHTML = `
+                    <h2>❌ 测试失败</h2>
+                    <p>错误: ${error.message}</p>
+                `;
+            }
+        }
+        
+        // 页面加载后测试
+        window.addEventListener('load', testAPIClient);
+    </script>
+</body>
+</html>

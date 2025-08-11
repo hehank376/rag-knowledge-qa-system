@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试前端历史记录修复</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .qa-display {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .qa-question {
+            background: #e3f2fd;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .qa-answer {
+            background: #f3e5f5;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 前端历史记录功能测试</h1>
+
+    <div class="test-section">
+        <h2>1. 创建测试会话</h2>
+        <button class="test-button" onclick="createTestSession()">创建测试会话</button>
+        <div id="session-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. 测试会话历史获取</h2>
+        <button class="test-button" onclick="testSessionHistory()">获取会话历史</button>
+        <div id="history-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. 测试前端历史显示</h2>
+        <button class="test-button" onclick="testHistoryDisplay()">测试历史显示</button>
+        <div id="display-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. 测试会话列表</h2>
+        <button class="test-button" onclick="testSessionList()">获取会话列表</button>
+        <div id="list-result"></div>
+    </div>
+
+    <script>
+        let testSessionId = null;
+
+        // 简化的API客户端
+        class SimpleAPIClient {
+            constructor(baseURL = 'http://localhost:8000') {
+                this.baseURL = baseURL;
+            }
+
+            async request(url, options = {}) {
+                const config = {
+                    headers: { 'Content-Type': 'application/json' },
+                    ...options
+                };
+
+                const response = await fetch(`${this.baseURL}${url}`, config);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return await response.json();
+            }
+
+            async post(url, data = {}) {
+                return this.request(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+            }
+
+            async get(url) {
+                return this.request(url, { method: 'GET' });
+            }
+        }
+
+        const api = new SimpleAPIClient();
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        function showData(elementId, data, title = '数据') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `
+                <div class="result info">
+                    <strong>${title}:</strong>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+        }
+
+        async function createTestSession() {
+            try {
+                showResult('session-result', '正在创建测试会话...', 'info');
+                
+                // 发送问答请求，会自动创建会话
+                const response = await api.post('/qa/ask', {
+                    question: '什么是人工智能？请简单介绍一下。'
+                });
+
+                testSessionId = response.session_id;
+                showResult('session-result', `✅ 测试会话创建成功！会话ID: ${testSessionId}`, 'success');
+                
+                // 再发送一个问题
+                await api.post('/qa/ask', {
+                    question: '深度学习和机器学习有什么区别？',
+                    session_id: testSessionId
+                });
+
+                showResult('session-result', `✅ 测试会话创建成功！会话ID: ${testSessionId}<br>已添加2个问答对`, 'success');
+                
+            } catch (error) {
+                showResult('session-result', `❌ 创建测试会话失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSessionHistory() {
+            if (!testSessionId) {
+                showResult('history-result', '❌ 请先创建测试会话', 'error');
+                return;
+            }
+
+            try {
+                showResult('history-result', '正在获取会话历史...', 'info');
+                
+                const history = await api.get(`/sessions/${testSessionId}/history`);
+                
+                showData('history-result', history, '会话历史数据');
+                
+            } catch (error) {
+                showResult('history-result', `❌ 获取会话历史失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testHistoryDisplay() {
+            if (!testSessionId) {
+                showResult('display-result', '❌ 请先创建测试会话', 'error');
+                return;
+            }
+
+            try {
+                showResult('display-result', '正在测试历史显示...', 'info');
+                
+                const historyData = await api.get(`/sessions/${testSessionId}/history`);
+                
+                // 模拟前端处理逻辑
+                let history = [];
+                if (Array.isArray(historyData)) {
+                    history = historyData;
+                } else if (historyData && historyData.history) {
+                    history = historyData.history;
+                }
+
+                if (history.length === 0) {
+                    showResult('display-result', '⚠️ 会话历史为空', 'error');
+                    return;
+                }
+
+                // 生成显示HTML
+                const displayHtml = history.map((qa, index) => `
+                    <div class="qa-display">
+                        <div class="qa-question">
+                            <strong>问题 ${index + 1}:</strong> ${qa.question}
+                        </div>
+                        <div class="qa-answer">
+                            <strong>回答:</strong> ${qa.answer.substring(0, 200)}...
+                            <br><small>置信度: ${(qa.confidence_score * 100).toFixed(1)}%</small>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('display-result').innerHTML = `
+                    <div class="result success">
+                        <strong>✅ 历史显示测试成功！找到 ${history.length} 条记录</strong>
+                        ${displayHtml}
+                    </div>
+                `;
+                
+            } catch (error) {
+                showResult('display-result', `❌ 历史显示测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSessionList() {
+            try {
+                showResult('list-result', '正在获取会话列表...', 'info');
+                
+                const sessions = await api.get('/sessions/recent');
+                
+                showData('list-result', sessions, '会话列表数据');
+                
+            } catch (error) {
+                showResult('list-result', `❌ 获取会话列表失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后的提示
+        window.addEventListener('load', () => {
+            console.log('🔍 前端历史记录功能测试页面已加载');
+            console.log('📝 测试步骤:');
+            console.log('1. 点击"创建测试会话"按钮');
+            console.log('2. 点击"获取会话历史"按钮');
+            console.log('3. 点击"测试历史显示"按钮');
+            console.log('4. 点击"获取会话列表"按钮');
+        });
+    </script>
+</body>
+</html>

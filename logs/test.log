@@ -1,0 +1,149 @@
+2025-08-04 14:58:51,555 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-08-04 14:58:51,580 - __main__ - INFO - 🧪 开始测试相似度计算和日志输出
+2025-08-04 14:58:51,581 - __main__ - INFO - 初始化嵌入服务...
+2025-08-04 14:58:51,582 - rag_system.services.embedding_service - INFO - 初始化嵌入服务: siliconflow
+2025-08-04 14:58:51,583 - rag_system.embeddings.factory - DEBUG - 延迟加载嵌入模型提供商: siliconflow
+2025-08-04 14:58:51,584 - rag_system.embeddings.factory - INFO - 创建嵌入模型实例成功: siliconflow - BAAI/bge-large-zh-v1.5
+2025-08-04 14:58:51,585 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-08-04 14:58:51,588 - httpx - DEBUG - load_verify_locations cafile='D:\\Python312\\Lib\\site-packages\\certifi\\cacert.pem'
+2025-08-04 14:58:51,822 - httpcore.connection - DEBUG - connect_tcp.started host='api.siliconflow.cn' port=443 local_address=None timeout=30 socket_options=None
+2025-08-04 14:58:51,898 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x0000023E23F56090>
+2025-08-04 14:58:51,898 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x0000023E2428E450> server_hostname='api.siliconflow.cn' timeout=30
+2025-08-04 14:58:52,103 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x0000023E23AC5130>
+2025-08-04 14:58:52,104 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:52,105 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-08-04 14:58:52,105 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-08-04 14:58:52,105 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-08-04 14:58:52,106 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:52,206 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Mon, 04 Aug 2025 06:58:50 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'12969'), (b'Connection', b'keep-alive')])
+2025-08-04 14:58:52,207 - httpx - INFO - HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-04 14:58:52,208 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-08-04 14:58:52,209 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-08-04 14:58:52,209 - httpcore.http11 - DEBUG - response_closed.started
+2025-08-04 14:58:52,209 - httpcore.http11 - DEBUG - response_closed.complete
+2025-08-04 14:58:52,210 - rag_system.embeddings.siliconflow_embedding - DEBUG - API调用成功: 处理时间 0.39s
+2025-08-04 14:58:52,212 - rag_system.embeddings.siliconflow_embedding - DEBUG - SiliconFlow嵌入API连接测试成功
+2025-08-04 14:58:52,212 - rag_system.embeddings.siliconflow_embedding - INFO - SiliconFlow嵌入模型初始化成功: BAAI/bge-large-zh-v1.5
+2025-08-04 14:58:52,212 - rag_system.services.embedding_service - INFO - 嵌入服务初始化成功
+2025-08-04 14:58:52,212 - __main__ - INFO - 初始化向量存储...
+2025-08-04 14:58:52,213 - rag_system.vector_store.chroma_store - INFO - 初始化Chroma向量数据库: ./test_chroma
+2025-08-04 14:58:52,643 - chromadb.config - DEBUG - Starting component System
+2025-08-04 14:58:52,643 - chromadb.config - DEBUG - Starting component Posthog
+2025-08-04 14:58:52,852 - rag_system.vector_store.chroma_store - INFO - 创建新集合: test
+2025-08-04 14:58:52,853 - rag_system.vector_store.chroma_store - INFO - Chroma向量数据库初始化成功
+2025-08-04 14:58:52,854 - __main__ - INFO - 开始向量化 4 个文本...
+2025-08-04 14:58:52,854 - rag_system.services.embedding_service - INFO - 开始批量向量化: 4 个文本
+2025-08-04 14:58:52,855 - rag_system.embeddings.siliconflow_embedding - INFO - 开始批量向量化: 4 个文本
+2025-08-04 14:58:52,855 - rag_system.embeddings.siliconflow_embedding - DEBUG - 处理第 1/1 批文本
+2025-08-04 14:58:52,856 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:52,858 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-08-04 14:58:52,858 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-08-04 14:58:52,859 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-08-04 14:58:52,860 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:52,940 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Mon, 04 Aug 2025 06:58:50 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'51369'), (b'Connection', b'keep-alive')])
+2025-08-04 14:58:52,941 - httpx - INFO - HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-04 14:58:52,941 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-08-04 14:58:53,007 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-08-04 14:58:53,008 - httpcore.http11 - DEBUG - response_closed.started
+2025-08-04 14:58:53,009 - httpcore.http11 - DEBUG - response_closed.complete
+2025-08-04 14:58:53,010 - rag_system.embeddings.siliconflow_embedding - DEBUG - API调用成功: 处理时间 0.15s
+2025-08-04 14:58:53,011 - rag_system.embeddings.siliconflow_embedding - INFO - 批量向量化完成: 生成 4 个向量
+2025-08-04 14:58:53,011 - rag_system.services.embedding_service - INFO - 批量向量化完成: 生成 4 个向量
+2025-08-04 14:58:53,011 - __main__ - INFO - 向量化完成，生成了 4 个向量
+2025-08-04 14:58:53,012 - __main__ - INFO - 添加向量到存储...
+2025-08-04 14:58:53,013 - rag_system.vector_store.chroma_store - INFO - 添加 4 个向量到Chroma
+2025-08-04 14:58:53,204 - rag_system.vector_store.chroma_store - INFO - 成功添加 4 个向量
+2025-08-04 14:58:53,205 - __main__ - INFO - \n查询: 什么是人工智能？
+2025-08-04 14:58:53,205 - rag_system.services.embedding_service - DEBUG - 开始向量化查询: 长度=8
+2025-08-04 14:58:53,206 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:53,207 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-08-04 14:58:53,208 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-08-04 14:58:53,209 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-08-04 14:58:53,209 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:53,292 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Mon, 04 Aug 2025 06:58:51 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'12895'), (b'Connection', b'keep-alive')])
+2025-08-04 14:58:53,293 - httpx - INFO - HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-04 14:58:53,294 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-08-04 14:58:53,294 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-08-04 14:58:53,295 - httpcore.http11 - DEBUG - response_closed.started
+2025-08-04 14:58:53,295 - httpcore.http11 - DEBUG - response_closed.complete
+2025-08-04 14:58:53,296 - rag_system.embeddings.siliconflow_embedding - DEBUG - API调用成功: 处理时间 0.09s
+2025-08-04 14:58:53,296 - rag_system.services.embedding_service - DEBUG - 查询向量化完成: 维度=1024
+2025-08-04 14:58:53,296 - __main__ - INFO - 查询向量维度: 1024
+2025-08-04 14:58:53,297 - rag_system.vector_store.chroma_store - DEBUG - 搜索相似向量，top_k=3, threshold=0.0
+2025-08-04 14:58:53,346 - rag_system.vector_store.chroma_store - DEBUG - 找到 3 个相似向量
+2025-08-04 14:58:53,346 - __main__ - INFO - 找到 3 个结果
+2025-08-04 14:58:53,347 - __main__ - INFO -   结果 1: 相似度=0.7972, 内容='人工智能是计算机科学的一个重要分支...'
+2025-08-04 14:58:53,347 - __main__ - INFO -   结果 2: 相似度=0.7505, 内容='机器学习是人工智能的核心技术...'
+2025-08-04 14:58:53,347 - __main__ - INFO -   结果 3: 相似度=0.7210, 内容='自然语言处理让计算机理解人类语言...'
+2025-08-04 14:58:53,348 - __main__ - INFO - \n查询: 机器学习的原理
+2025-08-04 14:58:53,348 - rag_system.services.embedding_service - DEBUG - 开始向量化查询: 长度=7
+2025-08-04 14:58:53,349 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:53,349 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-08-04 14:58:53,350 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-08-04 14:58:53,350 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-08-04 14:58:53,351 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:53,434 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Mon, 04 Aug 2025 06:58:51 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'12954'), (b'Connection', b'keep-alive')])
+2025-08-04 14:58:53,435 - httpx - INFO - HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-04 14:58:53,436 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-08-04 14:58:53,436 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-08-04 14:58:53,437 - httpcore.http11 - DEBUG - response_closed.started
+2025-08-04 14:58:53,437 - httpcore.http11 - DEBUG - response_closed.complete
+2025-08-04 14:58:53,438 - rag_system.embeddings.siliconflow_embedding - DEBUG - API调用成功: 处理时间 0.09s
+2025-08-04 14:58:53,439 - rag_system.services.embedding_service - DEBUG - 查询向量化完成: 维度=1024
+2025-08-04 14:58:53,439 - __main__ - INFO - 查询向量维度: 1024
+2025-08-04 14:58:53,440 - rag_system.vector_store.chroma_store - DEBUG - 搜索相似向量，top_k=3, threshold=0.0
+2025-08-04 14:58:53,443 - rag_system.vector_store.chroma_store - DEBUG - 找到 3 个相似向量
+2025-08-04 14:58:53,444 - __main__ - INFO - 找到 3 个结果
+2025-08-04 14:58:53,444 - __main__ - INFO -   结果 1: 相似度=0.8515, 内容='机器学习是人工智能的核心技术...'
+2025-08-04 14:58:53,445 - __main__ - INFO -   结果 2: 相似度=0.7732, 内容='深度学习使用神经网络处理复杂数据...'
+2025-08-04 14:58:53,445 - __main__ - INFO -   结果 3: 相似度=0.7567, 内容='自然语言处理让计算机理解人类语言...'
+2025-08-04 14:58:53,445 - __main__ - INFO - \n查询: 深度学习应用
+2025-08-04 14:58:53,446 - rag_system.services.embedding_service - DEBUG - 开始向量化查询: 长度=6
+2025-08-04 14:58:53,447 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:53,449 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-08-04 14:58:53,449 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-08-04 14:58:53,450 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-08-04 14:58:53,450 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:53,534 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Mon, 04 Aug 2025 06:58:51 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'12905'), (b'Connection', b'keep-alive')])
+2025-08-04 14:58:53,535 - httpx - INFO - HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-04 14:58:53,536 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-08-04 14:58:53,537 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-08-04 14:58:53,537 - httpcore.http11 - DEBUG - response_closed.started
+2025-08-04 14:58:53,538 - httpcore.http11 - DEBUG - response_closed.complete
+2025-08-04 14:58:53,539 - rag_system.embeddings.siliconflow_embedding - DEBUG - API调用成功: 处理时间 0.09s
+2025-08-04 14:58:53,539 - rag_system.services.embedding_service - DEBUG - 查询向量化完成: 维度=1024
+2025-08-04 14:58:53,539 - __main__ - INFO - 查询向量维度: 1024
+2025-08-04 14:58:53,540 - rag_system.vector_store.chroma_store - DEBUG - 搜索相似向量，top_k=3, threshold=0.0
+2025-08-04 14:58:53,543 - rag_system.vector_store.chroma_store - DEBUG - 找到 3 个相似向量
+2025-08-04 14:58:53,544 - __main__ - INFO - 找到 3 个结果
+2025-08-04 14:58:53,544 - __main__ - INFO -   结果 1: 相似度=0.8322, 内容='深度学习使用神经网络处理复杂数据...'
+2025-08-04 14:58:53,544 - __main__ - INFO -   结果 2: 相似度=0.7619, 内容='机器学习是人工智能的核心技术...'
+2025-08-04 14:58:53,545 - __main__ - INFO -   结果 3: 相似度=0.7409, 内容='人工智能是计算机科学的一个重要分支...'
+2025-08-04 14:58:53,545 - __main__ - INFO - \n查询: NLP技术
+2025-08-04 14:58:53,545 - rag_system.services.embedding_service - DEBUG - 开始向量化查询: 长度=5
+2025-08-04 14:58:53,546 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:53,548 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-08-04 14:58:53,548 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-08-04 14:58:53,549 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-08-04 14:58:53,549 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-08-04 14:58:53,616 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Mon, 04 Aug 2025 06:58:51 GMT'), (b'Content-Type', b'application/json; charset=utf-8'), (b'Content-Length', b'12940'), (b'Connection', b'keep-alive')])
+2025-08-04 14:58:53,617 - httpx - INFO - HTTP Request: POST https://api.siliconflow.cn/v1/embeddings "HTTP/1.1 200 OK"
+2025-08-04 14:58:53,618 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-08-04 14:58:53,618 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-08-04 14:58:53,619 - httpcore.http11 - DEBUG - response_closed.started
+2025-08-04 14:58:53,619 - httpcore.http11 - DEBUG - response_closed.complete
+2025-08-04 14:58:53,620 - rag_system.embeddings.siliconflow_embedding - DEBUG - API调用成功: 处理时间 0.07s
+2025-08-04 14:58:53,620 - rag_system.services.embedding_service - DEBUG - 查询向量化完成: 维度=1024
+2025-08-04 14:58:53,620 - __main__ - INFO - 查询向量维度: 1024
+2025-08-04 14:58:53,621 - rag_system.vector_store.chroma_store - DEBUG - 搜索相似向量，top_k=3, threshold=0.0
+2025-08-04 14:58:53,624 - rag_system.vector_store.chroma_store - DEBUG - 找到 3 个相似向量
+2025-08-04 14:58:53,624 - __main__ - INFO - 找到 3 个结果
+2025-08-04 14:58:53,625 - __main__ - INFO -   结果 1: 相似度=0.7673, 内容='机器学习是人工智能的核心技术...'
+2025-08-04 14:58:53,625 - __main__ - INFO -   结果 2: 相似度=0.7492, 内容='自然语言处理让计算机理解人类语言...'
+2025-08-04 14:58:53,625 - __main__ - INFO -   结果 3: 相似度=0.7277, 内容='人工智能是计算机科学的一个重要分支...'
+2025-08-04 14:58:53,626 - httpcore.connection - DEBUG - close.started
+2025-08-04 14:58:53,626 - httpcore.connection - DEBUG - close.complete
+2025-08-04 14:58:53,626 - rag_system.embeddings.siliconflow_embedding - INFO - SiliconFlow嵌入模型资源清理完成
+2025-08-04 14:58:53,627 - rag_system.services.embedding_service - INFO - 嵌入服务资源清理完成
+2025-08-04 14:58:53,627 - rag_system.vector_store.chroma_store - INFO - Chroma向量存储资源清理完成
+2025-08-04 14:58:53,628 - __main__ - INFO - 测试完成！

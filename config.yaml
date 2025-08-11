@@ -1,0 +1,30 @@
+api:
+  cors_origins:
+  - http://localhost:3000
+  - http://127.0.0.1:3000
+  host: 0.0.0.0
+  port: 8000
+app:
+  debug: true
+  name: RAG Knowledge QA System
+  version: 1.0.0
+database:
+  echo: true
+  url: sqlite:///./database/rag_system.db
+embeddings:
+  chunk_overlap: 200
+  chunk_size: 1000
+  model: BAAI/bge-large-zh-v1.5
+  provider: siliconflow
+llm:
+  max_tokens: 1000
+  model: Qwen/Qwen2.5-7B-Instruct
+  provider: siliconflow
+  temperature: 0.1
+retrieval:
+  similarity_threshold: 0.7
+  top_k: 5
+vector_store:
+  collection_name: documents
+  persist_directory: ./chroma_db
+  type: chroma

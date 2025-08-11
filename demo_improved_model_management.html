@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>改进后的模型管理功能演示</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .demo-section h2 {
+            color: #34495e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .feature-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .feature-card p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .feature-list li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+        .demo-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        .demo-button:hover {
+            background: #2980b9;
+        }
+        .demo-button.success {
+            background: #27ae60;
+        }
+        .demo-button.warning {
+            background: #f39c12;
+        }
+        .demo-output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-healthy { background-color: #27ae60; }
+        .status-warning { background-color: #f39c12; }
+        .status-error { background-color: #e74c3c; }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .comparison-table th {
+            background-color: #34495e;
+            color: white;
+        }
+        .comparison-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .before { color: #e74c3c; }
+        .after { color: #27ae60; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 改进后的模型管理功能演示</h1>
+            <p>统一管理嵌入模型和重排序模型，提供完整的监控和配置功能</p>
+        </div>
+
+        <div class="demo-section">
+            <h2>📋 功能概览</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🎯 统一管理</h3>
+                    <p>在一个界面管理所有模型</p>
+                    <ul class="feature-list">
+                        <li>嵌入模型配置</li>
+                        <li>重排序模型配置</li>
+                        <li>统一平台设置</li>
+                        <li>活跃模型切换</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 实时监控</h3>
+                    <p>全面的状态和性能监控</p>
+                    <ul class="feature-list">
+                        <li>模型状态监控</li>
+                        <li>性能指标统计</li>
+                        <li>健康状态检查</li>
+                        <li>实时数据更新</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 动态配置</h3>
+                    <p>运行时配置和模型切换</p>
+                    <ul class="feature-list">
+                        <li>热切换模型</li>
+                        <li>配置即时生效</li>
+                        <li>自动保存配置</li>
+                        <li>配置版本管理</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ 错误处理</h3>
+                    <p>完善的错误处理和用户反馈</p>
+                    <ul class="feature-list">
+                        <li>友好的错误提示</li>
+                        <li>自动重试机制</li>
+                        <li>详细的日志记录</li>
+                        <li>状态恢复功能</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🧪 功能演示</h2>
+            <p>点击下面的按钮体验各项功能（需要后端服务运行）</p>
+            
+            <div style="margin-bottom: 20px;">
+                <button class="demo-button" onclick="testModelStatus()">📊 获取模型状态</button>
+                <button class="demo-button" onclick="testModelMetrics()">📈 查看性能指标</button>
+                <button class="demo-button success" onclick="testModelSwitch()">🔄 切换模型</button>
+                <button class="demo-button warning" onclick="testHealthCheck()">🏥 健康检查</button>
+            </div>
+
+            <div id="demo-output" class="demo-output">
+                点击上面的按钮开始演示...
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>📈 改进对比</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>功能方面</th>
+                        <th>改进前</th>
+                        <th>改进后</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>模型管理</strong></td>
+                        <td class="before">❌ 分散在不同页面</td>
+                        <td class="after">✅ 统一管理界面</td>
+                    </tr>
+                    <tr>
+                        <td><strong>配置方式</strong></td>
+                        <td class="before">❌ 手动编辑配置文件</td>
+                        <td class="after">✅ 可视化配置界面</td>
+                    </tr>
+                    <tr>
+                        <td><strong>状态监控</strong></td>
+                        <td class="before">❌ 缺少实时状态</td>
+                        <td class="after">✅ 实时状态监控</td>
+                    </tr>
+                    <tr>
+                        <td><strong>模型切换</strong></td>
+                        <td class="before">❌ 需要重启服务</td>
+                        <td class="after">✅ 动态热切换</td>
+                    </tr>
+                    <tr>
+                        <td><strong>错误处理</strong></td>
+                        <td class="before">❌ 错误信息不明确</td>
+                        <td class="after">✅ 友好的错误提示</td>
+                    </tr>
+                    <tr>
+                        <td><strong>用户体验</strong></td>
+                        <td class="before">❌ 操作复杂</td>
+                        <td class="after">✅ 简单直观</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎯 使用指南</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <h3>基础配置步骤</h3>
+                    <ol style="line-height: 2;">
+                        <li>打开系统设置页面</li>
+                        <li>点击"模型配置"选项卡</li>
+                        <li>配置模型平台信息</li>
+                        <li>设置嵌入模型参数</li>
+                        <li>配置重排序模型</li>
+                        <li>保存配置</li>
+                    </ol>
+                </div>
+                <div>
+                    <h3>高级功能使用</h3>
+                    <ol style="line-height: 2;">
+                        <li>查看模型状态和指标</li>
+                        <li>执行健康检查</li>
+                        <li>动态切换活跃模型</li>
+                        <li>监控性能数据</li>
+                        <li>处理异常情况</li>
+                        <li>优化配置参数</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🔧 技术架构</h2>
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="display: inline-block; padding: 20px; background: #ecf0f1; border-radius: 10px;">
+                    <div style="margin-bottom: 20px;">
+                        <strong>前端架构</strong><br>
+                        Settings Page → ModelManager → API Client → UI Components
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <strong>后端架构</strong><br>
+                        Config API Router → Model Management → Configuration Storage
+                    </div>
+                    <div>
+                        <strong>数据流</strong><br>
+                        用户操作 → 前端处理 → API调用 → 后端处理 → 配置更新 → 状态同步
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎉 总结</h2>
+            <p>通过这次改进，我们成功实现了：</p>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🎯 目标达成</h3>
+                    <p>将嵌入模型和重排序模型整合到统一的管理界面，大大提升了用户体验和管理效率。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚀 技术提升</h3>
+                    <p>建立了完整的前后端分离架构，提供了丰富的API接口和实时监控功能。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💡 用户体验</h3>
+                    <p>简化了操作流程，提供了直观的界面和友好的错误处理机制。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔮 未来扩展</h3>
+                    <p>为后续功能扩展奠定了良好基础，支持更多模型提供商和高级功能。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('demo-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const typeIcon = {
+                'info': 'ℹ️',
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️'
+            };
+            
+            output.innerHTML += `[${timestamp}] ${typeIcon[type]} ${message}\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function testModelStatus() {
+            log('开始获取模型状态...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:8000/config/models/status');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('模型状态获取成功！', 'success');
+                    log(`找到 ${Object.keys(data.data?.model_configs || {}).length} 个模型配置`, 'info');
+                    
+                    if (data.data?.active_models) {
+                        const activeModels = data.data.active_models;
+                        log(`活跃嵌入模型: ${activeModels.embedding || '未设置'}`, 'info');
+                        log(`活跃重排序模型: ${activeModels.reranking || '未设置'}`, 'info');
+                    }
+                } else {
+                    log(`API调用失败: HTTP ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`连接失败: ${error.message}`, 'error');
+                log('请确保后端服务正在运行 (http://localhost:8000)', 'warning');
+            }
+        }
+
+        async function testModelMetrics() {
+            log('开始获取性能指标...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:8000/config/models/metrics');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('性能指标获取成功！', 'success');
+                    
+                    if (data.data?.embedding_metrics) {
+                        const metrics = data.data.embedding_metrics;
+                        log(`嵌入模型 - 总请求: ${metrics.total_requests}, 成功率: ${metrics.success_rate}%`, 'info');
+                    }
+                    
+                    if (data.data?.reranking_metrics) {
+                        const metrics = data.data.reranking_metrics;
+                        log(`重排序模型 - 总请求: ${metrics.total_requests}, 成功率: ${metrics.success_rate}%`, 'info');
+                    }
+                } else {
+                    log(`API调用失败: HTTP ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`连接失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testModelSwitch() {
+            log('开始测试模型切换...', 'info');
+            
+            try {
+                const switchData = {
+                    model_type: 'embedding',
+                    model_name: 'text-embedding-ada-002'
+                };
+                
+                const response = await fetch('http://localhost:8000/config/models/switch-active', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(switchData)
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        log('模型切换成功！', 'success');
+                        log(`已切换到: ${switchData.model_name}`, 'info');
+                    } else {
+                        log(`切换失败: ${data.error}`, 'error');
+                    }
+                } else {
+                    log(`API调用失败: HTTP ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`连接失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testHealthCheck() {
+            log('开始执行健康检查...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:8000/config/models/health-check', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        log('健康检查完成！', 'success');
+                        log(`整体状态: ${data.overall_status}`, 'info');
+                        
+                        if (data.details) {
+                            Object.entries(data.details).forEach(([component, health]) => {
+                                const status = health.status === 'healthy' ? '✅' : 
+                                             health.status === 'unhealthy' ? '❌' : '⚠️';
+                                log(`${component}: ${status} ${health.message} (${health.latency}ms)`, 'info');
+                            });
+                        }
+                    } else {
+                        log(`健康检查失败: ${data.error}`, 'error');
+                    }
+                } else {
+                    log(`API调用失败: HTTP ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`连接失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            log('模型管理功能演示页面已加载', 'success');
+            log('点击上方按钮开始体验各项功能', 'info');
+            log('注意: 需要后端服务运行在 http://localhost:8000', 'warning');
+        });
+    </script>
+</body>
+</html>

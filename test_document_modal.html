@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试文档模态框</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .document-details {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .detail-row label {
+            font-weight: bold;
+            color: #333;
+        }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status-badge.ready {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error-message {
+            color: #dc3545;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 文档模态框功能测试</h1>
+
+    <div class="test-section">
+        <h2>1. 测试模态框元素</h2>
+        <button class="test-button" onclick="testModalElements()">检查模态框元素</button>
+        <div id="element-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. 测试模态框显示</h2>
+        <button class="test-button" onclick="testShowModal()">显示测试模态框</button>
+        <div id="modal-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. 测试文档API</h2>
+        <button class="test-button" onclick="testDocumentAPI()">获取文档数据</button>
+        <div id="api-result"></div>
+    </div>
+
+    <!-- 模态框 -->
+    <div class="modal" id="documentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">文档详情</h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times">×</i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 内容将通过 JavaScript 动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入必要的JavaScript文件 -->
+    <script src="/frontend/js/utils.js"></script>
+    <script src="/frontend/js/api.js"></script>
+
+    <script>
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const color = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff';
+            element.innerHTML = `<div style="color: ${color}; margin-top: 10px;">${message}</div>`;
+        }
+
+        function testModalElements() {
+            const modal = document.getElementById('documentModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalClose = document.getElementById('modalClose');
+
+            const results = [
+                `模态框容器: ${modal ? '✅ 存在' : '❌ 不存在'}`,
+                `模态框标题: ${modalTitle ? '✅ 存在' : '❌ 不存在'}`,
+                `模态框内容: ${modalBody ? '✅ 存在' : '❌ 不存在'}`,
+                `关闭按钮: ${modalClose ? '✅ 存在' : '❌ 不存在'}`
+            ];
+
+            showResult('element-result', results.join('<br>'), 'info');
+        }
+
+        function testShowModal() {
+            // 模拟文档数据
+            const mockDoc = {
+                id: 'test-doc-123',
+                filename: '测试文档.txt',
+                file_type: 'txt',
+                file_size: 1024,
+                upload_time: new Date().toISOString(),
+                status: 'ready',
+                chunk_count: 5,
+                error_message: null
+            };
+
+            try {
+                // 创建简化的DocumentManager实例来测试showDocumentModal方法
+                const testManager = {
+                    getStatusClass: (status) => status,
+                    getStatusIcon: (status) => status === 'ready' ? 'fa-check' : 'fa-clock',
+                    getStatusText: (status) => status === 'ready' ? '已就绪' : '处理中',
+                    
+                    showDocumentModal: function(doc) {
+                        console.log('显示文档模态框:', doc);
+                        
+                        const modal = document.getElementById('documentModal');
+                        const modalTitle = document.getElementById('modalTitle');
+                        const modalBody = document.getElementById('modalBody');
+                        
+                        if (!modal || !modalTitle || !modalBody) {
+                            console.error('模态框元素未找到');
+                            return false;
+                        }
+
+                        modalTitle.textContent = doc.filename || '未知文档';
+                        
+                        modalBody.innerHTML = `
+                            <div class="document-details">
+                                <div class="detail-row">
+                                    <label>文件名:</label>
+                                    <span>${escapeHtml(doc.filename || '未知')}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <label>文件类型:</label>
+                                    <span>${(doc.file_type || 'unknown').toUpperCase()}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <label>文件大小:</label>
+                                    <span>${formatFileSize(doc.file_size || 0)}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <label>上传时间:</label>
+                                    <span>${formatDateTime(new Date(doc.upload_time))}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <label>处理状态:</label>
+                                    <span class="status-badge ${this.getStatusClass(doc.status)}">
+                                        <i class="fas ${this.getStatusIcon(doc.status)}"></i>
+                                        ${this.getStatusText(doc.status)}
+                                    </span>
+                                </div>
+                                ${doc.chunk_count ? `
+                                <div class="detail-row">
+                                    <label>文本块数:</label>
+                                    <span>${doc.chunk_count}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        `;
+
+                        modal.classList.add('active');
+                        return true;
+                    }
+                };
+
+                const success = testManager.showDocumentModal(mockDoc);
+                showResult('modal-result', success ? '✅ 模态框显示成功！' : '❌ 模态框显示失败', success ? 'success' : 'error');
+
+                // 设置关闭事件
+                const modalClose = document.getElementById('modalClose');
+                const modal = document.getElementById('documentModal');
+                
+                if (modalClose) {
+                    modalClose.onclick = () => {
+                        modal.classList.remove('active');
+                    };
+                }
+                
+                if (modal) {
+                    modal.onclick = (e) => {
+                        if (e.target === modal) {
+                            modal.classList.remove('active');
+                        }
+                    };
+                }
+
+            } catch (error) {
+                console.error('测试模态框时出错:', error);
+                showResult('modal-result', `❌ 测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDocumentAPI() {
+            try {
+                showResult('api-result', '正在获取文档列表...', 'info');
+                
+                const response = await apiClient.getDocuments();
+                const documents = response.documents || [];
+                
+                if (documents.length > 0) {
+                    const firstDoc = documents[0];
+                    showResult('api-result', 
+                        `✅ 获取到 ${documents.length} 个文档<br>` +
+                        `第一个文档: ${firstDoc.filename}<br>` +
+                        `状态: ${firstDoc.status}<br>` +
+                        `<button onclick="testRealModal('${firstDoc.id}')" class="test-button">显示真实文档详情</button>`,
+                        'success'
+                    );
+                } else {
+                    showResult('api-result', '⚠️ 没有找到文档', 'info');
+                }
+                
+            } catch (error) {
+                console.error('获取文档API失败:', error);
+                showResult('api-result', `❌ API调用失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function testRealModal(docId) {
+            try {
+                const doc = await apiClient.getDocument(docId);
+                console.log('获取到的文档数据:', doc);
+                
+                // 使用真实数据显示模态框
+                testShowModal();
+                
+            } catch (error) {
+                console.error('获取文档详情失败:', error);
+                showResult('api-result', `❌ 获取文档详情失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后的提示
+        window.addEventListener('load', () => {
+            console.log('🔍 文档模态框测试页面已加载');
+        });
+    </script>
+</body>
+</html>

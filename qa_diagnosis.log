@@ -1,0 +1,588 @@
+2025-08-03 15:35:04,400 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-08-03 15:35:05,227 - rag_system.vector_store.chroma_store - ERROR - Chroma�������ݿ��ʼ��ʧ��: 'dict' object has no attribute 'persist_directory'
+2025-08-03 15:35:05,229 - __main__ - ERROR - �����洢����쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\rag_system\vector_store\chroma_store.py", line 41, in initialize
+    logger.info(f"��ʼ��Chroma�������ݿ�: {self.config.persist_directory}")
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'persist_directory'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 62, in diagnose_qa_system
+    await vector_store.initialize()
+  File "D:\projects\rag\rag_system\vector_store\chroma_store.py", line 53, in initialize
+    raise VectorStoreError(f"Chroma��ʼ��ʧ��: {str(e)}")
+rag_system.utils.exceptions.VectorStoreError: [VECTOR_STORE_OPERATION_ERROR] Chroma��ʼ��ʧ��: 'dict' object has no attribute 'persist_directory'
+2025-08-03 15:35:05,238 - __main__ - ERROR - Ƕ��������쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 111, in diagnose_qa_system
+    from rag_system.embeddings.siliconflow_embeddings import SiliconflowEmbeddings
+ModuleNotFoundError: No module named 'rag_system.embeddings.siliconflow_embeddings'
+2025-08-03 15:35:05,243 - __main__ - ERROR - LLM�������쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 137, in diagnose_qa_system
+    from rag_system.llm.siliconflow_llm import SiliconflowLLM
+ImportError: cannot import name 'SiliconflowLLM' from 'rag_system.llm.siliconflow_llm' (D:\projects\rag\rag_system\llm\siliconflow_llm.py)
+2025-08-03 15:35:05,708 - rag_system.llm.factory - INFO - ����LLMʵ���ɹ�: mock - mock-model
+2025-08-03 15:35:05,708 - rag_system.services.qa_service - INFO - ��ʼ���ʴ����
+2025-08-03 15:35:05,710 - rag_system.services.retrieval_service - INFO - ��ʼ���ĵ���������
+2025-08-03 15:35:05,710 - rag_system.services.vector_service - INFO - ��ʼ�������洢��������: chroma
+2025-08-03 15:35:05,710 - rag_system.vector_store.chroma_store - INFO - ��ʼ��Chroma�������ݿ�: ./chroma_db
+2025-08-03 15:35:06,117 - chromadb.config - DEBUG - Starting component System
+2025-08-03 15:35:06,117 - chromadb.config - DEBUG - Starting component Posthog
+2025-08-03 15:35:06,172 - rag_system.vector_store.chroma_store - INFO - ʹ�����м���: documents
+2025-08-03 15:35:06,173 - rag_system.vector_store.chroma_store - INFO - Chroma�������ݿ��ʼ���ɹ�
+2025-08-03 15:35:06,173 - rag_system.services.vector_service - INFO - �����洢�����ʼ���ɹ�
+2025-08-03 15:35:06,173 - rag_system.services.embedding_service - INFO - ��ʼ��Ƕ�����: mock
+2025-08-03 15:35:06,174 - rag_system.embeddings.factory - INFO - ����Ƕ��ģ��ʵ���ɹ�: mock - mock-embedding
+2025-08-03 15:35:06,277 - rag_system.embeddings.mock_embedding - INFO - ģ��Ƕ��ģ�ͳ�ʼ���ɹ�: ά��=768
+2025-08-03 15:35:06,277 - rag_system.services.embedding_service - INFO - Ƕ������ʼ���ɹ�
+2025-08-03 15:35:06,277 - rag_system.services.document_service - INFO - ��ʼ���ĵ���������
+2025-08-03 15:35:10,432 - rag_system.database.connection - ERROR - ���ݿ��ʼ��ʧ��: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-03 15:35:10,434 - rag_system.services.document_service - ERROR - �ĵ����������ʼ��ʧ��: [CONFIG_VALIDATION_ERROR] ���ݿ��ʼ��ʧ��: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-03 15:35:10,434 - rag_system.services.retrieval_service - ERROR - �ĵ����������ʼ��ʧ��: [UNKNOWN_ERROR] �ĵ����������ʼ��ʧ��: [CONFIG_VALIDATION_ERROR] ���ݿ��ʼ��ʧ��: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-03 15:35:10,434 - rag_system.services.qa_service - ERROR - �ʴ�����ʼ��ʧ��: [UNKNOWN_ERROR] �ĵ����������ʼ��ʧ��: [UNKNOWN_ERROR] �ĵ����������ʼ��ʧ��: [CONFIG_VALIDATION_ERROR] ���ݿ��ʼ��ʧ��: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-03 15:35:10,435 - __main__ - ERROR - QA�������쳣
+Traceback (most recent call last):
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\impl.py", line 179, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\projects\rag\rag_system\database\connection.py", line 59, in initialize
+    Base.metadata.create_all(bind=self._engine)
+  File "D:\Python312\Lib\site-packages\sqlalchemy\sql\schema.py", line 5857, in create_all
+    bind._run_ddl_visitor(
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 3250, in _run_ddl_visitor
+    with self.begin() as conn:
+         ^^^^^^^^^^^^
+  File "D:\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 3240, in begin
+    with self.connect() as conn:
+         ^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 3276, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\impl.py", line 179, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\projects\rag\rag_system\services\document_service.py", line 69, in initialize
+    self.db_manager.initialize()
+  File "D:\projects\rag\rag_system\database\connection.py", line 65, in initialize
+    raise ConfigurationError(f"���ݿ��ʼ��ʧ��: {str(e)}")
+rag_system.utils.exceptions.ConfigurationError: [CONFIG_VALIDATION_ERROR] ���ݿ��ʼ��ʧ��: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\projects\rag\rag_system\services\retrieval_service.py", line 68, in initialize
+    await self.document_service.initialize()
+  File "D:\projects\rag\rag_system\services\document_service.py", line 85, in initialize
+    raise ProcessingError(f"�ĵ����������ʼ��ʧ��: {str(e)}")
+rag_system.utils.exceptions.ProcessingError: [UNKNOWN_ERROR] �ĵ����������ʼ��ʧ��: [CONFIG_VALIDATION_ERROR] ���ݿ��ʼ��ʧ��: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\projects\rag\rag_system\services\qa_service.py", line 63, in initialize
+    await self.retrieval_service.initialize()
+  File "D:\projects\rag\rag_system\services\retrieval_service.py", line 74, in initialize
+    raise ProcessingError(f"�ĵ����������ʼ��ʧ��: {str(e)}")
+rag_system.utils.exceptions.ProcessingError: [UNKNOWN_ERROR] �ĵ����������ʼ��ʧ��: [UNKNOWN_ERROR] �ĵ����������ʼ��ʧ��: [CONFIG_VALIDATION_ERROR] ���ݿ��ʼ��ʧ��: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 178, in diagnose_qa_system
+    await qa_service.initialize()
+  File "D:\projects\rag\rag_system\services\qa_service.py", line 72, in initialize
+    raise ProcessingError(f"�ʴ�����ʼ��ʧ��: {str(e)}")
+rag_system.utils.exceptions.ProcessingError: [UNKNOWN_ERROR] �ʴ�����ʼ��ʧ��: [UNKNOWN_ERROR] �ĵ����������ʼ��ʧ��: [UNKNOWN_ERROR] �ĵ����������ʼ��ʧ��: [CONFIG_VALIDATION_ERROR] ���ݿ��ʼ��ʧ��: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-03 15:35:14,504 - rag_system.database.connection - ERROR - ���ݿ��ʼ��ʧ��: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-03 15:35:14,504 - __main__ - ERROR - ���ݿ����쳣
+Traceback (most recent call last):
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\impl.py", line 179, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\projects\rag\rag_system\database\connection.py", line 59, in initialize
+    Base.metadata.create_all(bind=self._engine)
+  File "D:\Python312\Lib\site-packages\sqlalchemy\sql\schema.py", line 5857, in create_all
+    bind._run_ddl_visitor(
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 3250, in _run_ddl_visitor
+    with self.begin() as conn:
+         ^^^^^^^^^^^^
+  File "D:\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 3240, in begin
+    with self.connect() as conn:
+         ^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 3276, in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\impl.py", line 179, in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 900, in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "D:\Python312\Lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 218, in diagnose_qa_system
+    db_manager.initialize()
+  File "D:\projects\rag\rag_system\database\connection.py", line 65, in initialize
+    raise ConfigurationError(f"���ݿ��ʼ��ʧ��: {str(e)}")
+rag_system.utils.exceptions.ConfigurationError: [CONFIG_VALIDATION_ERROR] ���ݿ��ʼ��ʧ��: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5433 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-08-03 15:38:15,719 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-08-03 15:38:16,670 - rag_system.vector_store.chroma_store - ERROR - Chroma�������ݿ��ʼ��ʧ��: 'dict' object has no attribute 'persist_directory'
+2025-08-03 15:38:16,671 - __main__ - ERROR - �����洢����쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\rag_system\vector_store\chroma_store.py", line 41, in initialize
+    logger.info(f"��ʼ��Chroma�������ݿ�: {self.config.persist_directory}")
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'persist_directory'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 62, in diagnose_qa_system
+    await vector_store.initialize()
+  File "D:\projects\rag\rag_system\vector_store\chroma_store.py", line 53, in initialize
+    raise VectorStoreError(f"Chroma��ʼ��ʧ��: {str(e)}")
+rag_system.utils.exceptions.VectorStoreError: [VECTOR_STORE_OPERATION_ERROR] Chroma��ʼ��ʧ��: 'dict' object has no attribute 'persist_directory'
+2025-08-03 15:38:16,679 - __main__ - ERROR - Ƕ��������쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 111, in diagnose_qa_system
+    from rag_system.embeddings.siliconflow_embeddings import SiliconflowEmbeddings
+ModuleNotFoundError: No module named 'rag_system.embeddings.siliconflow_embeddings'
+2025-08-03 15:38:16,684 - __main__ - ERROR - LLM�������쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 137, in diagnose_qa_system
+    from rag_system.llm.siliconflow_llm import SiliconflowLLM
+ImportError: cannot import name 'SiliconflowLLM' from 'rag_system.llm.siliconflow_llm' (D:\projects\rag\rag_system\llm\siliconflow_llm.py)
+2025-08-03 15:38:17,072 - __main__ - ERROR - QA�������쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 177, in diagnose_qa_system
+    qa_service = QAService(qa_config)
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "D:\projects\rag\rag_system\services\qa_service.py", line 38, in __init__
+    self.retrieval_service = RetrievalService(retrieval_config)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projects\rag\rag_system\services\retrieval_service.py", line 42, in __init__
+    self.embedding_service = EmbeddingService(embedding_config)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projects\rag\rag_system\services\embedding_service.py", line 24, in __init__
+    self._embedding_config = self._create_embedding_config()
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projects\rag\rag_system\services\embedding_service.py", line 28, in _create_embedding_config
+    return EmbeddingConfig(
+           ^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for EmbeddingConfig
+  Value error, �ṩ�� siliconflow ��ҪAPI��Կ [type=value_error, input_value={'provider': 'siliconflow...30, 'retry_attempts': 3}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/value_error
+2025-08-03 15:38:17,082 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-08-03 15:38:17,083 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("documents")
+2025-08-03 15:38:17,083 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-08-03 15:38:17,084 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("documents")
+2025-08-03 15:38:17,085 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-08-03 15:38:17,085 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("sessions")
+2025-08-03 15:38:17,085 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-08-03 15:38:17,086 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("sessions")
+2025-08-03 15:38:17,086 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-08-03 15:38:17,087 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("qa_pairs")
+2025-08-03 15:38:17,087 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-08-03 15:38:17,087 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("qa_pairs")
+2025-08-03 15:38:17,088 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-08-03 15:38:17,088 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE documents (
+	id VARCHAR(36) NOT NULL, 
+	filename VARCHAR(255) NOT NULL, 
+	file_type VARCHAR(50) NOT NULL, 
+	file_size INTEGER NOT NULL, 
+	upload_time DATETIME NOT NULL, 
+	status VARCHAR(10) NOT NULL, 
+	chunk_count INTEGER NOT NULL, 
+	error_message TEXT, 
+	PRIMARY KEY (id)
+)
+
+
+2025-08-03 15:38:17,089 - sqlalchemy.engine.Engine - INFO - [no key 0.00047s] ()
+2025-08-03 15:38:17,105 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE sessions (
+	id VARCHAR(36) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	last_activity DATETIME NOT NULL, 
+	qa_count INTEGER NOT NULL, 
+	user_id VARCHAR(255), 
+	PRIMARY KEY (id)
+)
+
+
+2025-08-03 15:38:17,106 - sqlalchemy.engine.Engine - INFO - [no key 0.00079s] ()
+2025-08-03 15:38:17,116 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE qa_pairs (
+	id VARCHAR(36) NOT NULL, 
+	session_id VARCHAR(36) NOT NULL, 
+	question TEXT NOT NULL, 
+	answer TEXT NOT NULL, 
+	sources JSON, 
+	confidence_score FLOAT NOT NULL, 
+	processing_time FLOAT NOT NULL, 
+	timestamp DATETIME NOT NULL, 
+	extra_metadata JSON, 
+	document_id VARCHAR(36), 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(session_id) REFERENCES sessions (id), 
+	FOREIGN KEY(document_id) REFERENCES documents (id)
+)
+
+
+2025-08-03 15:38:17,117 - sqlalchemy.engine.Engine - INFO - [no key 0.00099s] ()
+2025-08-03 15:38:17,129 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-08-03 15:38:17,129 - rag_system.database.connection - INFO - ���ݿ��ʼsqlite:///./database/rag_system.dbstem.db
+2025-08-03 15:38:17,136 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-08-03 15:38:17,139 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT documents.id AS documents_id, documents.filename AS documents_filename, documents.file_type AS documents_file_type, documents.file_size AS documents_file_size, documents.upload_time AS documents_upload_time, documents.status AS documents_status, documents.chunk_count AS documents_chunk_count, documents.error_message AS documents_error_message 
+FROM documents) AS anon_1
+2025-08-03 15:38:17,139 - sqlalchemy.engine.Engine - INFO - [generated in 0.00066s] ()
+2025-08-03 15:38:17,142 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT documents.id AS documents_id, documents.filename AS documents_filename, documents.file_type AS documents_file_type, documents.file_size AS documents_file_size, documents.upload_time AS documents_upload_time, documents.status AS documents_status, documents.chunk_count AS documents_chunk_count, documents.error_message AS documents_error_message 
+FROM documents 
+WHERE documents.status = ?) AS anon_1
+2025-08-03 15:38:17,142 - sqlalchemy.engine.Engine - INFO - [generated in 0.00056s] ('ready',)
+2025-08-03 15:38:17,143 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-08-03 16:01:48,915 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-08-03 16:01:49,507 - rag_system.vector_store.chroma_store - ERROR - Chroma�������ݿ��ʼ��ʧ��: 'dict' object has no attribute 'persist_directory'
+2025-08-03 16:01:49,508 - __main__ - ERROR - �����洢����쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\rag_system\vector_store\chroma_store.py", line 41, in initialize
+    logger.info(f"��ʼ��Chroma�������ݿ�: {self.config.persist_directory}")
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'persist_directory'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 62, in diagnose_qa_system
+    await vector_store.initialize()
+  File "D:\projects\rag\rag_system\vector_store\chroma_store.py", line 53, in initialize
+    raise VectorStoreError(f"Chroma��ʼ��ʧ��: {str(e)}")
+rag_system.utils.exceptions.VectorStoreError: [VECTOR_STORE_OPERATION_ERROR] Chroma��ʼ��ʧ��: 'dict' object has no attribute 'persist_directory'
+2025-08-03 16:01:49,514 - __main__ - ERROR - Ƕ��������쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 111, in diagnose_qa_system
+    from rag_system.embeddings.siliconflow_embeddings import SiliconflowEmbeddings
+ModuleNotFoundError: No module named 'rag_system.embeddings.siliconflow_embeddings'
+2025-08-03 16:01:49,517 - __main__ - ERROR - LLM�������쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 137, in diagnose_qa_system
+    from rag_system.llm.siliconflow_llm import SiliconflowLLM
+ImportError: cannot import name 'SiliconflowLLM' from 'rag_system.llm.siliconflow_llm' (D:\projects\rag\rag_system\llm\siliconflow_llm.py)
+2025-08-03 16:01:49,803 - __main__ - ERROR - QA�������쳣
+Traceback (most recent call last):
+  File "D:\projects\rag\diagnose_qa_system.py", line 177, in diagnose_qa_system
+    qa_service = QAService(qa_config)
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "D:\projects\rag\rag_system\services\qa_service.py", line 38, in __init__
+    self.retrieval_service = RetrievalService(retrieval_config)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projects\rag\rag_system\services\retrieval_service.py", line 42, in __init__
+    self.embedding_service = EmbeddingService(embedding_config)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projects\rag\rag_system\services\embedding_service.py", line 24, in __init__
+    self._embedding_config = self._create_embedding_config()
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\projects\rag\rag_system\services\embedding_service.py", line 28, in _create_embedding_config
+    return EmbeddingConfig(
+           ^^^^^^^^^^^^^^^^
+  File "D:\Python312\Lib\site-packages\pydantic\main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for EmbeddingConfig
+  Value error, �ṩ�� siliconflow ��ҪAPI��Կ [type=value_error, input_value={'provider': 'siliconflow...30, 'retry_attempts': 3}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/value_error
+2025-08-03 16:01:49,812 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-08-03 16:01:49,812 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("documents")
+2025-08-03 16:01:49,812 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-08-03 16:01:49,813 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("sessions")
+2025-08-03 16:01:49,813 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-08-03 16:01:49,814 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("qa_pairs")
+2025-08-03 16:01:49,814 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2025-08-03 16:01:49,815 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-08-03 16:01:49,815 - rag_system.database.connection - INFO - ���ݿ��ʼsqlite:///./database/rag_system.dbstem.db
+2025-08-03 16:01:49,820 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-08-03 16:01:49,822 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT documents.id AS documents_id, documents.filename AS documents_filename, documents.file_type AS documents_file_type, documents.file_size AS documents_file_size, documents.upload_time AS documents_upload_time, documents.status AS documents_status, documents.chunk_count AS documents_chunk_count, documents.error_message AS documents_error_message 
+FROM documents) AS anon_1
+2025-08-03 16:01:49,823 - sqlalchemy.engine.Engine - INFO - [generated in 0.00054s] ()
+2025-08-03 16:01:49,825 - sqlalchemy.engine.Engine - INFO - SELECT count(*) AS count_1 
+FROM (SELECT documents.id AS documents_id, documents.filename AS documents_filename, documents.file_type AS documents_file_type, documents.file_size AS documents_file_size, documents.upload_time AS documents_upload_time, documents.status AS documents_status, documents.chunk_count AS documents_chunk_count, documents.error_message AS documents_error_message 
+FROM documents 
+WHERE documents.status = ?) AS anon_1
+2025-08-03 16:01:49,825 - sqlalchemy.engine.Engine - INFO - [generated in 0.00036s] ('ready',)
+2025-08-03 16:01:49,825 - sqlalchemy.engine.Engine - INFO - COMMIT
