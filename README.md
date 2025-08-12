@@ -1,6 +1,6 @@
 # RAG Knowledge QA System
 
-基于LangChain的检索增强生成知识库问答系统
+基于RAG的检索增强生成知识库问答系统
 
 ## 项目结构
 
@@ -30,6 +30,12 @@ rag_system/
 │   └── helpers.py        # 工具函数
 └── __init__.py
 ```
+## 系统截图
+<img width="3056" height="1668" alt="image" src="https://github.com/user-attachments/assets/81684f41-ba69-42cc-b7a3-d9e73b1fbccc" />
+<img width="3056" height="1668" alt="image" src="https://github.com/user-attachments/assets/75b9bd51-8d45-403f-8cf0-e7916385a5ff" />
+<img width="3056" height="1668" alt="image" src="https://github.com/user-attachments/assets/8ef7c66c-884d-4a41-9aed-c25fea0910b1" />
+<img width="3056" height="1668" alt="image" src="https://github.com/user-attachments/assets/ef115597-465b-4833-be97-56c387ba3dd7" />
+
 
 ## 安装
 
